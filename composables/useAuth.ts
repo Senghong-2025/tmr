@@ -98,7 +98,7 @@ export default function useAuth() {
     }
   };
 
-  const isAuth = computed(() => localStorage.getItem("token"));
+  const isAuth = computed(() => process.client ? localStorage.getItem("token") : false);
 
   return {
     register,

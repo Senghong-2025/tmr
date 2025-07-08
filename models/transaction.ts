@@ -1,17 +1,21 @@
 export interface ICreateTransaction {
   userId: string;
-  categoryId: string;
+  title: string;
+  category: string;
   amount: string;
-  currecyId: string;
+  currency: string;
+  type: string;
   date: string;
   note: string;
   createdOn: string;
 }
 
 export interface ITransaction {
-  categoryId: string;
+  category: string;
+  title: string;
+  type: string
   amount: string;
-  currecyId: string;
+  currecy: string;
   date: string;
   note: string;
 }

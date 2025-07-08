@@ -15,8 +15,4 @@ export default defineNuxtConfig({
       inputVariant: "filled",
     },
   },
-  devServer: {
-    host: "0.0.0.0",
-    port: 3000,
-  },
 });

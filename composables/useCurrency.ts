@@ -11,6 +11,13 @@ export default function useCurrency() {
       where("userId", "==", useId)
     );
     const querySnapshot = await getDocs(q);
+    if(querySnapshot.empty) {
+      currencies.value = [{
+        symbol: "$",
+        code: "USD",
+      }];
+      return;
+    }
     currencies.value = querySnapshot.docs.map((doc) => ({
       id: doc.id,
       ...(doc.data() as ICurrency),
@@ -21,5 +28,6 @@ export default function useCurrency() {
 
   return {
     getCurrency,
+    currencies
   };
 }
