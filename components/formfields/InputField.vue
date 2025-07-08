@@ -1,0 +1,39 @@
+<template>
+    <div class="w-full">
+        <label v-if="label" class="block mb-1 text-sm font-medium text-gray-700">
+            {{ label }}
+        </label>
+
+        <div :class="[
+            'relative w-full',
+            disabled ? 'opacity-50 cursor-not-allowed' : '',
+        ]">
+            <input :type="type" v-model="model" :placeholder="placeholder" :disabled="disabled"
+                class="w-full px-4 py-2 text-sm border rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all border-gray-300" />
+        </div>
+
+        <p v-if="error" class="mt-1 text-sm text-red-500">{{ error }}</p>
+    </div>
+</template>
+
+<script setup lang="ts">
+const props = defineProps<{
+    type?: "text" | "number" | "email" | "password"
+    modelValue: string | number
+    label?: string
+    placeholder?: string
+    disabled?: boolean
+    error?: string
+}>()
+
+const emit = defineEmits<{
+    (e: 'update:modelValue', value: string | number): void
+}>()
+
+const model = computed(({
+    get: () => props.modelValue,
+    set: (value) => {
+        emit('update:modelValue', value);
+    }
+}))
+</script>
