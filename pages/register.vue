@@ -17,6 +17,6 @@
 </template>
 
 <script setup lang="ts">
-import InputField from '~/composables/formfields/InputField.vue';
+import InputField from '@/components/formfields/InputField.vue';
 const { register, registerModel } = useAuth();
 </script>

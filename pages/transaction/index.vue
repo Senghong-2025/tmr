@@ -14,14 +14,15 @@
         </div>
         <div v-else>
             <div class="flex flex-wrap gap-4">
+                <!-- <pre>{{ transactions }}</pre> -->
                 <div class="w-sm" v-for="(transaction, index) in transactions" :key="index">
                     <div
                         class="flex items-center p-4 h-[52px] bg-gray-100/50 shadow-xl border-1 border-blue-200  rounded-sm space-x-4">
                         <div class="flex-1">
-                            <p class="text-sm font-medium">{{ transaction.amount }}</p>
-                            <p class="text-xs text-gray-500">{{ transaction.note }}</p>
+                            <p class="text-sm font-medium">{{ transaction.title }}</p>
+                            <p class="text-xs text-gray-500">{{ transaction.date }}</p>
                         </div>
-                        <span class="text-sm font-semibold">{{ transaction.amount }} {{ transaction.currecy }}</span>
+                        <span class="text-sm font-semibold">{{ transaction.amount }} {{ transaction.currency }}</span>
                     </div>
                 </div>
             </div>

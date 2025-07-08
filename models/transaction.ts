@@ -15,7 +15,7 @@ export interface ITransaction {
   title: string;
   type: string
   amount: string;
-  currecy: string;
+  currency: string;
   date: string;
   note: string;
 }
