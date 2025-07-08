@@ -9,7 +9,7 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "build:prod": "npx nuxi build",
-    "deploy:prod": "npx wrapper pages deploy dist/"
+    "deploy:prod": "npx wrangler pages deploy dist/"
   },
   "dependencies": {
     "@primeuix/themes": "^1.2.1",
