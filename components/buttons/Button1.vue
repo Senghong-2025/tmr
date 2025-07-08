@@ -1,6 +1,6 @@
 <template>
     <button :disabled="loading || disabled" @click="$emit('click')" :class="{ 'w-full': !isBlocked }"
-        class="relative flex items-center justify-center px-4 py-1 cursor-pointer rounded-sm bg-blue-800 text-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+        class="relative flex items-center justify-center px-4 py-1.5 cursor-pointer rounded-sm bg-blue-800 text-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
         <span v-if="!loading">
             <slot>{{ name ?? 'Submit' }}</slot>
         </span>

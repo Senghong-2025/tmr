@@ -1,41 +1,43 @@
 <template>
     <div class="p-4">
-        <div class="flex justify-between pb-2">
-            <p class="text-[18px] font-medium text-blue-800">Transaction</p>
-            <Button1 @click="$router.push('/transaction/create')" name="New" :is-blocked="true" />
-        </div>
+        <BodyHeader route="transaction/create" title="Transaction" button-name="New" is-button class="mb-2" />
         <div v-if="isLoading">
-            <div class="flex flex-wrap gap-4">
-                <div v-for="item in 10" :key="item" class="w-sm">
-                    <div class="flex items-center p-4 h-[52px] bg-gray-200 rounded-sm animate-pulse space-x-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div v-for="item in 10" :key="item">
+                    <div class="flex items-center p-4 h-[52px] bg-gray-600/20 rounded-sm animate-pulse space-x-4">
                     </div>
                 </div>
             </div>
         </div>
         <div v-else>
-            <div class="flex flex-wrap gap-4">
-                <!-- <pre>{{ transactions }}</pre> -->
-                <div class="w-sm" v-for="(transaction, index) in transactions" :key="index">
-                    <div
-                        class="flex items-center p-4 h-[52px] bg-gray-100/50 shadow-xl border-1 border-blue-200  rounded-sm space-x-4">
-                        <div class="flex-1">
-                            <p class="text-sm font-medium">{{ transaction.title }}</p>
-                            <p class="text-xs text-gray-500">{{ transaction.date }}</p>
-                        </div>
-                        <span class="text-sm font-semibold">{{ transaction.amount }} {{ transaction.currency }}</span>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div v-for="(transaction, index) in transactions" :key="index" @click="goToTransaction(transaction)"
+                    class="p-4 h-[52px] bg-gray-600/20 shadow-xl border border-blue-500 rounded-sm flex items-center justify-between text-white">
+                    <div>
+                        <p class="text-sm font-medium">{{ transaction.title }}</p>
+                        <p class="text-xs text-gray-300">{{ transaction.date }}</p>
                     </div>
+                    <span class="text-sm font-semibold">
+                        {{ transaction.amount }} {{ transaction.currency }}
+                    </span>
                 </div>
             </div>
         </div>
     </div>
 </template>
 <script lang="ts" setup>
-import Button1 from '~/components/buttons/Button1.vue';
+import BodyHeader from '~/components/BodyHeader.vue';
 const {
     transactions,
     getTranscation,
     isLoading
 } = useTransaction();
+
+const router = useRouter();
+function goToTransaction(transaction: object) {
+    const encoded = JSON.stringify(transaction);
+    router.push(`/transaction/${encoded}`);
+}
 
 onMounted(() => {
     getTranscation();

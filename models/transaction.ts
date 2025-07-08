@@ -11,6 +11,7 @@ export interface ICreateTransaction {
 }
 
 export interface ITransaction {
+  id: string;
   category: string;
   title: string;
   type: string

@@ -1,10 +1,10 @@
 <template>
-  <TheNavbar />
-  <div class="bg-gradient-to-br from-blue-100 to-blue-400 min-h-screen app"><nuxt-page /></div>
+  <div class="bg-gradient-to-br from-[#203249] to-[#19263d] text-white min-h-screen">
+    <TheNavbar />
+    <div class=" min-h-[calc(100vh-52px)]"><nuxt-page /></div>
+  </div>
 </template>
 <script lang="ts" setup>
 
 </script>
-<style scoped>
-
-</style>
+<style scoped></style>

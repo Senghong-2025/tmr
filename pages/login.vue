@@ -1,7 +1,7 @@
 <template>
-    <div class="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-        <form class="w-full max-w-md bg-white shadow-xl rounded-2xl p-8 space-y-6">
-            <h2 class="text-2xl font-bold text-center text-gray-800">Login</h2>
+    <div class="min-h-screen flex items-center justify-center">
+        <form class="w-full max-w-md bg-gray-600/20 shadow-xl rounded-sm p-8 space-y-6">
+            <h2 class="text-2xl font-bold text-center ">Login</h2>
             <InputField v-model:model-value="loginModel.email" type="email" label="Email" />
             <InputField v-model:model-value="loginModel.password" type="password" label="Password" />
             <Button1 @click="login" :loading="loading" />

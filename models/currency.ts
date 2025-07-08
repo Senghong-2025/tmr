@@ -5,7 +5,6 @@ export interface ICreateCurrecy {
   createdOn: string;
 }
 
-
 export interface ICurrency {
   symbol: string;
   code: string;

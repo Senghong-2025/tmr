@@ -1,1 +1,1 @@
-export type TInputType = "text" | "number" | "email" | "password" | "date";
+export type TInputType = "text" | "number" | "email" | "password" | "date"|"datetime-local";

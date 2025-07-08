@@ -73,10 +73,13 @@ export default function useTransaction() {
         where("userId", "==", userId)
       );
       const response = await getDocs(q);
-      transactions.value = response.docs.map((doc) => ({
-        id: doc.id,
-        ...(doc.data() as ITransaction),
-      }));
+      transactions.value = response.docs.map((doc) => {
+        const { id, ...data } = doc.data() as ITransaction;
+        return {
+          id: doc.id,
+          ...data,
+        };
+      });
     } catch (error) {
       console.error("Error fetching transactions:", error);
     } finally {
