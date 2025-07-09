@@ -11,7 +11,7 @@
         </div>
         <div v-else>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div v-for="(transaction, index) in transactions" :key="index" @click="goToTransaction(transaction)"
+                <div v-for="(transaction, index) in transactions" :key="index" @click="goToTransaction(transaction.id)"
                     class="h-[52px] bg-gray-600/20 shadow-xl border border-blue-500 rounded-sm flex items-center justify-between gap-2 text-white px-2">
                     <div class="w-[40px] h-[40px] rounded-full bg-gray-200 relative shrink-0">
                         <div class="w-4 h-4 flex justify-center items-center rounded-full bg-red-500 absolute -top-1 -right-1">
@@ -38,14 +38,9 @@ import { ArrowRightIcon } from '@heroicons/vue/24/solid';
 const {
     transactions,
     getTranscation,
-    isLoading
+    isLoading,
+    goToTransaction
 } = useTransaction();
-
-const router = useRouter();
-function goToTransaction(transaction: object) {
-    const encoded = JSON.stringify(transaction);
-    router.push(`/transaction/${encoded}`);
-}
 
 onMounted(() => {
     getTranscation();

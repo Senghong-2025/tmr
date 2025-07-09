@@ -1,10 +1,10 @@
 <template>
-  <div class="notification-wrapper fixed top-6 right-6 space-y-4 z-50 max-w-sm w-full">
+  <div class="notification-wrapper fixed top-2 right-2 md:top-6 md:right-6 space-y-4 z-50 max-w-sm w-[calc(100vw - 2rem)]">
     <transition-group name="fade" tag="div">
       <div
         v-for="(n, index) in notifications"
         :key="index"
-        class="flex items-start gap-3 px-5 py-4 rounded-xl shadow-lg text-white relative overflow-hidden ring-1 ring-black/5"
+        class="flex items-start gap-3 px-5 py-4 rounded-xl shadow-lg text-white relative overflow-hidden ring-1 ring-black/5 mt-2"
         :class="{
           'bg-green-500': n.type === 'success',
           'bg-red-500': n.type === 'error',

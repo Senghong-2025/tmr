@@ -1,6 +1,13 @@
 <template>
-    <button :disabled="loading || disabled" @click="$emit('click')" :class="{ 'w-full': !isBlocked }"
-        class="relative flex items-center justify-center px-4 py-1.5 cursor-pointer rounded-sm bg-blue-800 text-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+    <button
+        :disabled="loading || disabled"
+        @click="$emit('click')"
+        :class="[
+            { 'w-full': !isBlocked },
+            colorClass,
+            'relative flex items-center justify-center px-4 py-1.5 cursor-pointer rounded-sm text-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-all'
+        ]"
+    >
         <span v-if="!loading">
             <slot>{{ name ?? 'Submit' }}</slot>
         </span>
@@ -14,12 +21,27 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
+import { computed } from 'vue'
+
+const props = defineProps<{
     name?: string
     loading?: boolean
     disabled?: boolean
     isBlocked?: boolean
+    type?: 'primary' | 'secondary' | 'danger' // Add more types as needed
 }>()
+
+const colorClass = computed(() => {
+    switch (props.type) {
+        case 'secondary':
+            return 'bg-gray-500 hover:bg-gray-600'
+        case 'danger':
+            return 'bg-red-600 hover:bg-red-700'
+        case 'primary':
+        default:
+            return 'bg-blue-800 hover:bg-blue-900'
+    }
+})
 
 defineEmits<{
     (e: 'click'): void
