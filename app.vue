@@ -7,4 +7,8 @@
 <script lang="ts" setup>
 
 </script>
-<style scoped></style>
+<style>
+body {
+  background-color: #19263d;
+}
+</style>
