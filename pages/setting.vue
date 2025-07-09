@@ -5,7 +5,7 @@
     <div class="flex gap-4 mb-4 overflow-x-auto w-screen">
         <NuxtLink v-for="route in settingRoutes" :to="route.path" :key="route.name"
             class="py-1.5 px-4 bg-black/10 font-medium cursor-pointer min-w-[150px] rounded-sm flex justify-center"
-            :class="{ 'bg-gray-400/20 text-green-600': isActived(route) }"
+            :class="{ 'bg-gray-400/20 text-green-500': isActived(route) }"
         >
             {{ route.name }}
         </NuxtLink>

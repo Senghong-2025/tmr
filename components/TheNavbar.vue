@@ -4,7 +4,7 @@
             <h1 class="text-2xl font-bold">Hi, {{ username }}</h1>
             <nav class="space-x-4">
                 <NuxtLink to="/transaction" class="hover:underline">Transaction</NuxtLink>
-                <NuxtLink to="/setting" class="hover:underline">Setting</NuxtLink>
+                <NuxtLink to="/setting/profile" class="hover:underline">Setting</NuxtLink>
                 <!-- <NuxtLink href="#" class="hover:underline" @click="logout"> logout</NuxtLink> -->
             </nav>
         </div>

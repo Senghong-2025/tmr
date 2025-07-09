@@ -53,8 +53,6 @@ export default function useTransaction() {
       if (userId) {
         model.userId = userId;
         model.createdOn = new Date().toISOString();
-
-        console.log(model);
         await addDoc(collection($db, "transactions"), {
           ...toRaw(model),
         });

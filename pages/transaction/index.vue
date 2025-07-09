@@ -12,14 +12,18 @@
         <div v-else>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div v-for="(transaction, index) in transactions" :key="index" @click="goToTransaction(transaction)"
-                    class="p-4 h-[52px] bg-gray-600/20 shadow-xl border border-blue-500 rounded-sm flex items-center justify-between text-white">
-                    <div>
-                        <p class="text-sm font-medium">{{ transaction.title }}</p>
-                        <p class="text-xs text-gray-300">{{ transaction.date }}</p>
+                    class="h-[52px] bg-gray-600/20 shadow-xl border border-blue-500 rounded-sm flex items-center px-2 gap-2 justify-between text-white">
+                    <div class="w-[30px] h-[30px] rounded-full bg-black/50">
                     </div>
-                    <span class="text-sm font-semibold">
-                        {{ transaction.amount }} {{ transaction.currency }}
-                    </span>
+                    <div class="flex w-full items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium">{{ transaction.title }}</p>
+                            <p class="text-xs text-gray-300">{{ transaction.date }}</p>
+                        </div>
+                        <span class="text-sm font-semibold">
+                            {{ transaction.amount }} {{ transaction.currency }}
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
