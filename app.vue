@@ -3,6 +3,7 @@
     <TheNavbar />
     <div class=" min-h-[calc(100vh-52px)]"><nuxt-page /></div>
   </div>
+  <Notification />
 </template>
 <script lang="ts" setup>
 
