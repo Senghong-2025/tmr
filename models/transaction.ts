@@ -20,3 +20,9 @@ export interface ITransaction {
   date: string;
   note: string;
 }
+
+export interface ITransactionGroupDisplay {
+  date: string;
+  transactions: ITransaction[];
+  totalAmount: number;
+}

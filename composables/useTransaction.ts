@@ -1,6 +1,6 @@
 import { addDoc, collection, deleteDoc, doc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import type { TInputMode, TInputType } from "~/models/form";
-import type { ICreateTransaction, ITransaction } from "~/models/transaction";
+import type { ICreateTransaction, ITransaction, ITransactionGroupDisplay } from "~/models/transaction";
 import { notify } from "~/composables/useNotification";
 
 interface IFormField {
@@ -119,6 +119,7 @@ export default function useTransaction() {
     }
   };
 
+  const transactionGroups = ref<ITransactionGroupDisplay[]>([]);
   const getTranscation = async () => {
     isLoading.value = true;
     try {
@@ -135,6 +136,31 @@ export default function useTransaction() {
           ...data,
         };
       });
+      // Order by date descending
+      const txs = response.docs
+        .map((doc) => {
+          const { id, ...data } = doc.data() as ITransaction;
+          return {
+            id: doc.id,
+            ...data,
+          };
+        })
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+      // Group by date (YYYY-MM-DD)
+      const grouped: Record<string, ITransaction[]> = {};
+      txs.forEach((tx) => {
+        const dateKey = tx.date.split("T")[0];
+        if (!grouped[dateKey]) grouped[dateKey] = [];
+        grouped[dateKey].push(tx);
+      });
+
+      // Convert to array of blocks: [{ date: string, transactions: ITransaction[], totalAmount: number }]
+      transactionGroups.value = Object.entries(grouped).map(([date, txs]) => ({
+        date,
+        transactions: txs,
+        totalAmount: txs.reduce((sum, tx) => sum + Number(tx.amount), 0),
+      }));
     } catch (error) {
       console.error("Error fetching transactions:", error);
     } finally {
@@ -175,5 +201,6 @@ export default function useTransaction() {
     updateTransaction,
     goToTransaction,
     deleteTransaction,
+    transactionGroups
   };
 }
