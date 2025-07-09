@@ -7,8 +7,7 @@
 
         <div :class="['relative w-full', disabled ? 'opacity-50 cursor-not-allowed' : '']">
             <select v-model="model" :disabled="disabled"
-                class="w-full px-4 py-2 text-sm rounded-sm shadow-sm focus:outline-none focus:ring-1  bg-black/10 focus:ring-blue-500 focus:border-blue-500 transition-all "
-                popper-class="custom-select-dropdown">
+                class="w-full px-4 py-2 text-sm rounded-sm shadow-sm focus:outline-none focus:ring-1  bg-black/10 focus:ring-blue-500 focus:border-blue-500 transition-all ">
                 <option v-if="placeholder" disabled value="">{{ placeholder }}</option>
                 <option v-for="option in options" :key="option.value" :value="option.value">
                     {{ option.label }}
@@ -43,5 +42,11 @@ const model = computed({
 <style>
 option {
     background-color: #19263d;
+}
+
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }
 </style>
