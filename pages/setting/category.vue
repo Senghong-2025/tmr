@@ -12,7 +12,9 @@
             <div v-else v-for="category in categories" class="flex justify-between bg-gray-600/20 p-4 rounded-sm relative">
                 <div class="font-semibold">{{ category.name }}</div>
                 <div class="text-gray-500">({{ category.type }})</div>
-                <button type="button" class="absolute -top-2 -right-2 cursor-pointer" @click="deleteCategory(category.id || '')">delete</button>
+                <button type="button" class="absolute -top-2 -right-2 cursor-pointer" @click="deleteCategory(category.id || '')">
+                    <TrashIcon class="w-6 h-6 text-red-500 hover:text-red-700 transition-colors" />
+                </button>
             </div>
         </div>
     </div>
@@ -20,6 +22,7 @@
 <script lang="ts" setup>
 import InputField from '~/components/formfields/InputField.vue';
 import Button1 from '~/components/buttons/Button1.vue';
+import { TrashIcon } from '@heroicons/vue/24/solid';
 
 const { categories, getCategory, isLoading, model, addCategory, deleteCategory } = useCategory();
 

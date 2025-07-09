@@ -1,14 +1,19 @@
 @import "tailwindcss";
 
 body {
-  font-family: 'Roboto', Arial, Helvetica, sans-serif;
+  font-family: "Roboto", Arial, Helvetica, sans-serif;
   font-weight: 400;
 }
 
-input,
-textarea,
+option {
+  background-color: #19263d;
+}
 select,
-.p-inputtext {
+input,
+textarea {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
   font-size: 16px !important;
 }
 

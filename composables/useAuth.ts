@@ -66,19 +66,20 @@ export default function useAuth() {
       );
 
       if (response.user) {
-        console.log(response.user.uid);
         const uId = response.user.uid;
         const docRef = doc($db, "users", uId);
         const docSnap = await getDoc(docRef);
         const userData = docSnap.data();
         const token = await response.user.getIdToken();
-        localStorage.setItem("userId", response.user.uid)
+        localStorage.setItem("userId", response.user.uid);
         localStorage.setItem("user", JSON.stringify(userData));
         localStorage.setItem("token", token);
         window.location.replace(window.location.origin);
+        notify("Success", "success");
       }
     } catch (error) {
       console.error("err:", error);
+      notify("Login failed. Please check your credentials.", "error");
     } finally {
       loading.value = false;
     }
@@ -88,9 +89,11 @@ export default function useAuth() {
     loading.value = true;
     try {
       await $auth.signOut();
-      localStorage.clear();
+      await localStorage.clear();
       navigateTo("/login");
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
@@ -98,7 +101,9 @@ export default function useAuth() {
     }
   };
 
-  const isAuth = computed(() => process.client ? localStorage.getItem("token") : false);
+  const isAuth = computed(() =>
+    process.client ? localStorage.getItem("token") : false
+  );
 
   return {
     register,

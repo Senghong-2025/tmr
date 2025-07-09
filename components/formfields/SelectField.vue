@@ -39,14 +39,3 @@ const model = computed({
     set: (value) => emit('update:modelValue', value),
 })
 </script>
-<style>
-option {
-    background-color: #19263d;
-}
-
-select {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-}
-</style>

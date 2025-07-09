@@ -12,8 +12,11 @@
         <div v-else>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div v-for="(transaction, index) in transactions" :key="index" @click="goToTransaction(transaction)"
-                    class="h-[52px] bg-gray-600/20 shadow-xl border border-blue-500 rounded-sm flex items-center px-2 gap-2 justify-between text-white">
-                    <div class="w-[30px] h-[30px] rounded-full bg-black/50">
+                    class="h-[52px] bg-gray-600/20 shadow-xl border border-blue-500 rounded-sm flex items-center justify-between gap-2 text-white px-2">
+                    <div class="w-[40px] h-[40px] rounded-full bg-gray-200 relative shrink-0">
+                        <div class="w-4 h-4 flex justify-center items-center rounded-full bg-red-500 absolute -top-1 -right-1">
+                            <ArrowRightIcon class="w-[10px] h-[10px] text-gray-100 -rotate-45" />
+                        </div>
                     </div>
                     <div class="flex w-full items-center justify-between">
                         <div>
@@ -31,6 +34,7 @@
 </template>
 <script lang="ts" setup>
 import BodyHeader from '~/components/BodyHeader.vue';
+import { ArrowRightIcon } from '@heroicons/vue/24/solid';
 const {
     transactions,
     getTranscation,
