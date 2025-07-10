@@ -1,10 +1,11 @@
-import { addDoc, collection, deleteDoc, doc, getDocs, query, where } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import type { ICategory, ICreateCategory } from "~/models/category";
 
 export default function useCategory() {
   const { $db } = useNuxtApp();
   const categories = ref<ICategory[]>([]);
   const isLoading = ref(false);
+  const isEdit = ref(false);
   const getCategory = async () => {
     isLoading.value = true;
     try {
@@ -65,6 +66,37 @@ export default function useCategory() {
     }
   }
 
+  const id = ref("");
+  const onClickEdit = (category: ICategory) => {
+    isEdit.value = true;
+    model.name = category.name;
+    model.type = category.type;
+    model.userId = category.userId;
+    model.createdOn = category.createdOn;
+    id.value = category.id ?? "";
+  };
+
+  const updateCategory = async () => {
+    isLoading.value = true;
+    try {
+      const categoryRef = doc($db, "categories", id.value);
+      await updateDoc(categoryRef, {
+        name: model.name,
+        type: model.type,
+        userId: model.userId,
+        createdOn: model.createdOn,
+      });
+      await getCategory();
+      isEdit.value = false;
+      model.name = '';
+      model.type = '';
+    } catch (error) {
+      console.error("Error updating category:", error);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   return {
     getCategory,
     categories,
@@ -72,5 +104,8 @@ export default function useCategory() {
     addCategory,
     model,
     deleteCategory,
+    isEdit,
+    onClickEdit,
+    updateCategory,
   };
 }

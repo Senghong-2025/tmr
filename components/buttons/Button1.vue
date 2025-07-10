@@ -28,7 +28,7 @@ const props = defineProps<{
     loading?: boolean
     disabled?: boolean
     isBlocked?: boolean
-    type?: 'primary' | 'secondary' | 'danger' // Add more types as needed
+    type?: 'primary' | 'secondary' | 'danger' | 'info' // Add more types as needed
 }>()
 
 const colorClass = computed(() => {
@@ -38,6 +38,9 @@ const colorClass = computed(() => {
         case 'danger':
             return 'bg-red-600 hover:bg-red-700'
         case 'primary':
+            return 'bg-blue-600 hover:bg-blue-700'
+        case 'info':
+            return 'bg-gray-400 hover:bg-gray-400'
         default:
             return 'bg-blue-800 hover:bg-blue-900'
     }

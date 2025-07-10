@@ -1,18 +1,24 @@
 <template>
-    <div class="flex justify-center items-center min-h-screen">
-        <div :class="['bg-gray-600/20 w-[400px] md:w-[600px] rounded-lg shadow-sm', { 'bg-blue-200': isLoading }]">
-            <div class="p-4">
-            <input-field required label="Title" mode="text" v-model="model.title" type="text"/>
-            <input-field required label="Amount" mode="decimal" v-model="model.amount" type="text"/>
-            <select-field required label="Currency" v-model="model.currency" :options="currencies.map((currency) => ({ label: currency.code, value: currency.code }))"/>
-            <input-field required label="Date" v-model="model.date" type="datetime-local"/>
-            <select-field required label="Type" v-model="model.type" :options="[{ label: 'Income', value: 'Income' }, { label: 'Outcome', value: 'Outcome' }]"/>
-            <select-field required label="Category" v-model="model.category" :options="categories.map((v) => ({ label: v.name, value: v.name }))"/>
-            <input-field required label="Note" v-model="model.note" type="text"/>
-            <div class="flex justify-end mt-4 gap-2">
-                <Button1 @click="updateTransaction(id)" name="Update" :loading="isLoading"/>
-                <Button1 @click="deleteTransaction(id)" name="Delete" :loading="isLoading" type="danger" />
-            </div>
+    <div class="p-4">
+        <BodyHeader route="/transaction" title="Update Transaction" button-name="Back" is-button class="mb-2" />
+        <div class="flex justify-center items-center">
+            <div :class="['bg-gray-600/20 w-[400px] md:w-[600px] rounded-lg shadow-sm', { 'bg-blue-200': isLoading }]">
+                <div class="p-4">
+                    <input-field required label="Title" mode="text" v-model="model.title" type="text" />
+                    <input-field required label="Amount" mode="decimal" v-model="model.amount" type="text" />
+                    <select-field required label="Currency" v-model="model.currency"
+                        :options="currencies.map((currency) => ({ label: currency.code, value: currency.code }))" />
+                    <input-field required label="Date" v-model="model.date" type="datetime-local" />
+                    <select-field required label="Type" v-model="model.type"
+                        :options="[{ label: 'Income', value: 'Income' }, { label: 'Outcome', value: 'Outcome' }]" />
+                    <select-field required label="Category" v-model="model.category"
+                        :options="categories.map((v) => ({ label: v.name, value: v.name }))" />
+                    <input-field required label="Note" v-model="model.note" type="text" />
+                    <div class="flex justify-end mt-4 gap-2">
+                        <Button1 @click="updateTransaction(id)" name="Update" :loading="isLoading" />
+                        <Button1 @click="deleteTransaction(id)" name="Delete" :loading="isLoading" type="danger" />
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -24,7 +30,7 @@ import Button1 from '~/components/buttons/Button1.vue';
 import type { ITransaction } from '~/models/transaction';
 
 const route = useRoute();
-const { categories, getCategory, updateTransaction, isLoading, model, transactions , getTranscation, deleteTransaction } = useTransaction();
+const { categories, getCategory, updateTransaction, isLoading, model, transactions, getTranscation, deleteTransaction } = useTransaction();
 const { currencies, getCurrency } = useCurrency();
 
 const id = route.params.id as string;

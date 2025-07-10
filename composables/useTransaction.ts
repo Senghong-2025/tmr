@@ -159,7 +159,8 @@ export default function useTransaction() {
       transactionGroups.value = Object.entries(grouped).map(([date, txs]) => ({
         date,
         transactions: txs,
-        totalAmount: txs.reduce((sum, tx) => sum + Number(tx.amount), 0),
+        totalAmount: txs.reduce((sum, tx) => sum + (tx.currency === 'USD' ? Number(tx.amount) : Number(tx.amount) / 4000), 0),
+        totalAmountKhr: txs.reduce((sum, tx) => sum + (tx.currency === 'KHR' ? Number(tx.amount) : Number(tx.amount) * 4000), 0),
       }));
     } catch (error) {
       console.error("Error fetching transactions:", error);

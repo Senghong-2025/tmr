@@ -1,6 +1,6 @@
 <template>
     <div class="p-4">
-        <BodyHeader title="Transaction" route="/transaction" buttonName="Back" :is-button="true" class="mb-2" />
+        <BodyHeader title="Create Transaction" route="/transaction" buttonName="Back" :is-button="true" class="mb-2" />
         <div class="flex justify-center w-full">
             <form class="md:w-[1000px] p-4 w-full bg-gray-600/20 shadow-xl shadow-gray-800 md:px-10 rounded-sm">
                 <div class="grid gap-2 mb-2">

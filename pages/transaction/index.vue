@@ -13,9 +13,10 @@
             <!-- <pre>{{ transactionGroups }}</pre> -->
             <div v-for="(group, index) in transactionGroups" :key="index" class="grid">
                 <div class="flex w-full border-b-1 text-sm border-gray-300 mb-2 text-green-500 ">{{ group.date }}</div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div v-for="transaction in group.transactions" :key="transaction.id" @click="goToTransaction(transaction.id)" 
-                        class="h-[52px] bg-gray-600/20 shadow-xl rounded-sm flex items-center justify-between gap-2 text-white px-2 mb-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                    <div v-for="transaction in group.transactions" :key="transaction.id"
+                        @click="goToTransaction(transaction.id)"
+                        class="h-[52px] bg-gray-600/20 shadow-xl rounded-sm flex items-center justify-between gap-2 text-white px-2">
                         <div class="w-[40px] h-[40px] rounded-full bg-gray-200 relative shrink-0">
                             <div
                                 class="w-4 h-4 flex justify-center items-center rounded-full bg-red-500 absolute -top-1 -right-1">
@@ -34,7 +35,12 @@
                     </div>
                 </div>
                 <div class="flex justify-between bg-gray-600/20 p-4 rounded-sm text-sm font-semibold mb-4">
-                    <div class="text-gray-200">Total:</div> <div class="text-red-500">{{ group.totalAmount }} {{ group.transactions[0]?.currency || 'USD' }}</div>
+                    <div class="text-gray-200">Total:</div>
+                    <div class="text-red-500 flex flex-col items-end">
+                        <span>{{ group.totalAmount }} {{ group.transactions[0]?.currency || 'USD'}}</span>
+                        <span v-if="group.totalAmountKhr">{{ group.totalAmountKhr }} KHR</span>
+
+                    </div>
                 </div>
             </div>
         </div>

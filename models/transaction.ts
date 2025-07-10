@@ -25,4 +25,5 @@ export interface ITransactionGroupDisplay {
   date: string;
   transactions: ITransaction[];
   totalAmount: number;
+  totalAmountKhr?: number;
 }
