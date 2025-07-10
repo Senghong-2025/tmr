@@ -17,7 +17,7 @@
                             :mode="field.mode" />
                     </div>
                 </div>
-                <Button1 type="button" @click="addTranscation" :loading="isLoading" />
+                <Button1 type="primary" @click="addTranscation" :loading="isLoading" />
             </form>
         </div>
     </div>
