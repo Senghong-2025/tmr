@@ -23,7 +23,7 @@
                 <div class="text-gray-500">({{ category.type }})</div>
                 <button type="button"
                     class="absolute -top-2 flex justify-center items-center right-6 cursor-pointer w-6 h-6 rounded-full border border-gray-400"
-                    @click="deleteCategory(category.id || '')">
+                    @click="onClickDelete(category.id || '')">
                     <TrashIcon class="w-4 h-4 text-red-500 hover:text-red-700 transition-colors" />
                 </button>
                 <button type="button"
@@ -34,13 +34,35 @@
             </div>
         </div>
     </div>
+    <div v-if="isShowModal" class="fixed bottom-0 rounded-t-xl left-0 right-0 bg-gray-600/60 p-4 grid gap-4">
+        <Button1 @click="deleteCategory(id), isShowModal = false" name="Ok" type="danger" :loading="isLoading" />
+        <Button1 @click="isShowModal = false" name="No" type="info" />
+    </div>
 </template>
 <script lang="ts" setup>
+import { onMounted } from 'vue';
 import InputField from '~/components/formfields/InputField.vue';
 import Button1 from '~/components/buttons/Button1.vue';
 import { TrashIcon, PencilIcon } from '@heroicons/vue/24/solid';
+import useCategory from '~/composables/useCategory';
 
-const { categories, getCategory, isLoading, model, addCategory, deleteCategory, isEdit, onClickEdit, updateCategory } = useCategory();
+const id = ref('');
+const isShowModal = ref(false);
+const onClickDelete = (categoryId: string) => {
+    id.value = categoryId;
+    isShowModal.value = true;
+};
+const { 
+    categories, 
+    getCategory, 
+    isLoading, 
+    model, 
+    addCategory, 
+    deleteCategory, 
+    isEdit, 
+    onClickEdit, 
+    updateCategory 
+} = useCategory();
 
 onMounted(() => {
     getCategory();
