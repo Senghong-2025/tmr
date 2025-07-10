@@ -17,6 +17,7 @@
     "@primevue/forms": "^4.3.6",
     "@tailwindcss/vite": "^4.1.11",
     "@vue-hero-icons/outline": "^1.7.2",
+    "date-fns": "^4.1.0",
     "firebase": "^11.10.0",
     "nuxt": "^3.17.6",
     "primevue": "^4.3.6",

@@ -12,7 +12,7 @@
         <div v-else>
             <!-- <pre>{{ transactionGroups }}</pre> -->
             <div v-for="(group, index) in transactionGroups" :key="index" class="grid">
-                <div class="flex w-full border-b-1 text-sm border-gray-300 mb-2 text-green-500 ">{{ group.date }}</div>
+                <div class="flex w-full border-b-1 text-sm border-gray-300 mb-2 text-green-500 ">{{ convertDate(group.date) }}</div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
                     <div v-for="transaction in group.transactions" :key="transaction.id"
                         @click="goToTransaction(transaction.id)"
@@ -26,7 +26,7 @@
                         <div class="flex w-full items-center justify-between">
                             <div>
                                 <p class="text-sm font-medium">{{ transaction.title }}</p>
-                                <p class="text-xs text-gray-300">{{ transaction.date }}</p>
+                                <p class="text-xs text-gray-300">{{ convertDateTime(transaction.date) }}</p>
                             </div>
                             <span class="text-sm font-semibold">
                                 {{ transaction.amount }} {{ transaction.currency }}
@@ -37,7 +37,7 @@
                 <div class="flex justify-between bg-gray-600/20 p-4 rounded-sm text-sm font-semibold mb-4">
                     <div class="text-gray-200">Total:</div>
                     <div class="text-red-500 flex flex-col items-end">
-                        <span>{{ group.totalAmount }} {{ group.transactions[0]?.currency || 'USD'}}</span>
+                        <span>{{ group.totalAmount }} {{ group.transactions[0]?.currency || 'USD' }}</span>
                         <span v-if="group.totalAmountKhr">{{ group.totalAmountKhr }} KHR</span>
 
                     </div>
@@ -49,6 +49,9 @@
 <script lang="ts" setup>
 import BodyHeader from '~/components/BodyHeader.vue';
 import { ArrowRightIcon } from '@heroicons/vue/24/solid';
+import commonHelper from '~/helpers/commonHelper';
+
+const { convertDate, convertDateTime } = commonHelper;
 const {
     transactions,
     getTranscation,
@@ -56,6 +59,7 @@ const {
     goToTransaction,
     transactionGroups
 } = useTransaction();
+
 
 onMounted(() => {
     getTranscation();

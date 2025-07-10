@@ -12,6 +12,9 @@
                 class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors font-semibold">
                 Register
             </button>
+            <div class="text-sm text-gray-500 mt-4 text-center">
+                Already have an account? <RouterLink to="/login" class="text-blue-500">Login</RouterLink>
+            </div>
         </form>
     </div>
 </template>
