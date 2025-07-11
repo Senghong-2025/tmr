@@ -1,15 +1,14 @@
 export default defineNuxtRouteMiddleware((to, from) => {
-  if (process.client) {
-    const token = localStorage.getItem("token");
+  if (!process.client) return;
 
-    if (!token) {
-      if (to.path !== "/login" && to.path !== "/register") {
-        return navigateTo("/login");
-      }
-    } else {
-      if (to.path === "/login" || to.path === "/register") {
-        return navigateTo("/");
-      }
-    }
+  const token = localStorage.getItem("token");
+  const isAuthPage = ["/login", "/register"].includes(to.path);
+
+  if (!token && !isAuthPage) {
+    return navigateTo("/login");
+  }
+
+  if (token && isAuthPage) {
+    return navigateTo("/");
   }
 });

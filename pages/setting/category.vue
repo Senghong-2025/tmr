@@ -3,13 +3,15 @@
         <div class="app-grid">
             <InputField v-model="model.name" type="text" placeholder="Category Name" />
             <InputField v-model="model.type" type="text" placeholder="Category Type" />
-            <Button1 v-if="!isEdit" @click="addCategory" class="w-full" :name="isEdit ? 'Update' : 'Save'" :disabled="isLoading"
+            <div class="w-full">
+                <Button1 v-if="!isEdit" @click="addCategory" class="w-full" name="Save" :disabled="isLoading"
                     :loading="isLoading" />
-            <div v-else class="flex gap-2 items-center w-full">
-                <Button1 @click="[isEdit = false, model.name = '', model.type = '']" class="w-full" name="Cancel" type="info" :disabled="isLoading"
-                    :loading="isLoading" />
-                <Button1 @click="updateCategory" class="w-full" :name="isEdit ? 'Update' : 'Save'" :disabled="isLoading"
-                    :loading="isLoading" />
+                <div v-else class="flex gap-2 items-center w-full">
+                    <Button1 @click="() => { isEdit = false; model.name = ''; model.type = ''; }" class="w-full"
+                        name="Cancel" type="info" :disabled="isLoading" :loading="isLoading" />
+                    <Button1 @click="updateCategory" class="w-full" name="Update" :disabled="isLoading"
+                        :loading="isLoading" />
+                </div>
             </div>
         </div>
         <div class="border-b my-2 border-gray-400"></div>
@@ -34,10 +36,9 @@
             </div>
         </div>
     </div>
-    <div v-if="isShowModal" class="fixed bottom-0 rounded-t-xl left-0 right-0 bg-gray-600/60 p-4 grid gap-4">
-        <Button1 @click="deleteCategory(id), isShowModal = false" name="Ok" type="danger" :loading="isLoading" />
-        <Button1 @click="isShowModal = false" name="No" type="info" />
-    </div>
+    <DeleteModal :is-show-modal="isShowModal" :is-loading="isLoading" @delete="deleteCategory(id)"
+        @close="isShowModal = false" />
+
 </template>
 <script lang="ts" setup>
 import { onMounted } from 'vue';
@@ -45,6 +46,7 @@ import InputField from '~/components/formfields/InputField.vue';
 import Button1 from '~/components/buttons/Button1.vue';
 import { TrashIcon, PencilIcon } from '@heroicons/vue/24/solid';
 import useCategory from '~/composables/useCategory';
+import DeleteModal from '~/components/Modals/DeleteModal.vue';
 
 const id = ref('');
 const isShowModal = ref(false);
@@ -52,16 +54,16 @@ const onClickDelete = (categoryId: string) => {
     id.value = categoryId;
     isShowModal.value = true;
 };
-const { 
-    categories, 
-    getCategory, 
-    isLoading, 
-    model, 
-    addCategory, 
-    deleteCategory, 
-    isEdit, 
-    onClickEdit, 
-    updateCategory 
+const {
+    categories,
+    getCategory,
+    isLoading,
+    model,
+    addCategory,
+    deleteCategory,
+    isEdit,
+    onClickEdit,
+    updateCategory
 } = useCategory();
 
 onMounted(() => {

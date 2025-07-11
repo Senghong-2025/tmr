@@ -37,8 +37,8 @@
                 <div class="flex justify-between bg-gray-600/20 p-4 rounded-sm text-sm font-semibold mb-4">
                     <div class="text-gray-200">Total:</div>
                     <div class="text-red-500 flex flex-col items-end">
-                        <span>{{ group.totalAmount }} {{ group.transactions[0]?.currency || 'USD' }}</span>
-                        <span v-if="group.totalAmountKhr">{{ group.totalAmountKhr }} KHR</span>
+                        <span>{{ group.totalAmount }} USD($)</span>
+                        <span v-if="group.totalAmountKhr">{{ group.totalAmountKhr }} KHR(៛)</span>
 
                     </div>
                 </div>
