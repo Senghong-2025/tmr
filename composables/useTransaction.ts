@@ -2,6 +2,7 @@ import { addDoc, collection, deleteDoc, doc, getDocs, query, updateDoc, where } 
 import type { TInputMode, TInputType } from "~/models/form";
 import type { ICreateTransaction, ITransaction, ITransactionGroupDisplay } from "~/models/transaction";
 import { notify } from "~/composables/useNotification";
+import { is, tr } from "date-fns/locale";
 
 interface IFormField {
   label: string;
@@ -119,53 +120,78 @@ export default function useTransaction() {
     }
   };
 
-  const transactionGroups = ref<ITransactionGroupDisplay[]>([]);
+  const transactionGroups = useState<ITransactionGroupDisplay[]>(
+    'transactionGroups',
+    () => []
+  );
+
+  const transactionLoad = useState<boolean>('transactionLoad', () => false);
+
   const getTranscation = async () => {
-    isLoading.value = true;
+    if(transactionLoad.value) return;
+    transactionLoad.value = true;
     try {
-      const userId = localStorage.getItem("userId");
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        console.warn('User ID not found in localStorage');
+        return;
+      }
+
       const q = query(
-        collection($db, "transactions"),
-        where("userId", "==", userId)
+        collection($db, 'transactions'),
+        where('userId', '==', userId)
       );
+
       const response = await getDocs(q);
-      transactions.value = response.docs.map((doc) => {
-        const { id, ...data } = doc.data() as ITransaction;
-        return {
-          id: doc.id,
-          ...data,
-        };
-      });
-      // Order by date descending
+
       const txs = response.docs
         .map((doc) => {
-          const { id, ...data } = doc.data() as ITransaction;
+          const data = doc.data() as Omit<ITransaction, "id">;
           return {
             id: doc.id,
             ...data,
           };
         })
-        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        .sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
 
-      // Group by date (YYYY-MM-DD)
+      // Group transactions by date (YYYY-MM-DD)
       const grouped: Record<string, ITransaction[]> = {};
+
       txs.forEach((tx) => {
-        const dateKey = tx.date.split("T")[0];
+        const dateKey = tx.date.split('T')[0];
         if (!grouped[dateKey]) grouped[dateKey] = [];
         grouped[dateKey].push(tx);
       });
 
-      // Convert to array of blocks: [{ date: string, transactions: ITransaction[], totalAmount: number }]
-      transactionGroups.value = Object.entries(grouped).map(([date, txs]) => ({
-        date,
-        transactions: txs,
-        totalAmount: txs.reduce((sum, tx) => sum + (tx.currency === 'USD' ? Number(tx.amount) : Number(tx.amount) / 4000), 0),
-        totalAmountKhr: txs.reduce((sum, tx) => sum + (tx.currency === 'KHR' ? Number(tx.amount) : Number(tx.amount) * 4000), 0),
-      }));
+      // Transform to array with total amounts
+      transactionGroups.value = Object.entries(grouped).map(
+        ([date, transactions]) => ({
+          date,
+          transactions,
+          totalAmount: transactions.reduce(
+            (sum, tx) =>
+              sum +
+              (tx.currency === 'USD'
+                ? Number(tx.amount)
+                : Number(tx.amount) / 4000),
+            0
+          ),
+          totalAmountKhr: transactions.reduce(
+            (sum, tx) =>
+              sum +
+              (tx.currency === 'KHR'
+                ? Number(tx.amount)
+                : Number(tx.amount) * 4000),
+            0
+          ),
+        })
+      );
     } catch (error) {
-      console.error("Error fetching transactions:", error);
+      console.error('Error fetching transactions:', error);
     } finally {
-      isLoading.value = false;
+      transactionLoad.value = false;
     }
   };
 
@@ -202,6 +228,7 @@ export default function useTransaction() {
     updateTransaction,
     goToTransaction,
     deleteTransaction,
-    transactionGroups
+    transactionGroups,
+    transactionLoad,
   };
 }
