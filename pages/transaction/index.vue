@@ -1,7 +1,7 @@
 <template>
     <div class="p-4">
         <BodyHeader route="transaction/create" title="Transaction" button-name="New" is-button class="mb-2" />
-        <div v-if="transactionLoad">
+        <div v-if="isLoading">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div v-for="item in 10" :key="item">
                     <div class="flex items-center p-4 h-[52px] bg-gray-600/20 rounded-sm animate-pulse space-x-4">
@@ -57,7 +57,6 @@ const {
     isLoading,
     goToTransaction,
     transactionGroups,
-    transactionLoad,
 } = useTransaction();
 
 

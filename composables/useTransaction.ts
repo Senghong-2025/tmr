@@ -125,11 +125,9 @@ export default function useTransaction() {
     () => []
   );
 
-  const transactionLoad = useState<boolean>('transactionLoad', () => false);
 
   const getTranscation = async () => {
-    if(transactionLoad.value) return;
-    transactionLoad.value = true;
+    isLoading.value = true;
     try {
       const userId = localStorage.getItem('userId');
       if (!userId) {
@@ -143,8 +141,7 @@ export default function useTransaction() {
       );
 
       const response = await getDocs(q);
-
-      const txs = response.docs
+      transactions.value = response.docs
         .map((doc) => {
           const data = doc.data() as Omit<ITransaction, "id">;
           return {
@@ -159,7 +156,7 @@ export default function useTransaction() {
       // Group transactions by date (YYYY-MM-DD)
       const grouped: Record<string, ITransaction[]> = {};
 
-      txs.forEach((tx) => {
+      transactions.value.forEach((tx) => {
         const dateKey = tx.date.split('T')[0];
         if (!grouped[dateKey]) grouped[dateKey] = [];
         grouped[dateKey].push(tx);
@@ -191,7 +188,7 @@ export default function useTransaction() {
     } catch (error) {
       console.error('Error fetching transactions:', error);
     } finally {
-      transactionLoad.value = false;
+      isLoading.value = false;
     }
   };
 
@@ -259,7 +256,6 @@ export default function useTransaction() {
     goToTransaction,
     deleteTransaction,
     transactionGroups,
-    transactionLoad,
     getTotalTransactionByMonth,
     total,
   };

@@ -30,9 +30,8 @@ import Button1 from '~/components/buttons/Button1.vue';
 import type { ITransaction } from '~/models/transaction';
 
 const route = useRoute();
-const { categories, getCategory, updateTransaction, isLoading, model, transactions, getTranscation, deleteTransaction } = useTransaction();
+const { categories, getCategory, updateTransaction, isLoading, model, transactions, getTranscation, deleteTransaction, transactionGroups } = useTransaction();
 const { currencies, getCurrency } = useCurrency();
-
 const id = route.params.id as string;
 
 onBeforeMount(async () => {
