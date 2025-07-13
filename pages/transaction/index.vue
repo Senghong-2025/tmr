@@ -9,7 +9,7 @@
                 </div>
             </div>
         </div>
-        <div v-else class="h-[calc(100vh-180px)] overflow-y-auto">
+        <div v-else class="h-[calc(100vh-200px)] overflow-y-auto">
             <div v-for="(group, index) in transactionGroups" :key="index" class="grid relative">
                 <div class="flex w-full border-b-1 text-sm border-gray-300 bg-gray-700 py-2 px-2 z-10 mb-2 text-green-500 sticky top-0">{{ convertDate(group.date) }}</div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
@@ -48,7 +48,7 @@
 <script lang="ts" setup>
 import BodyHeader from '~/components/BodyHeader.vue';
 import { ArrowRightIcon } from '@heroicons/vue/24/solid';
-import commonHelper from '~/helpers/commonHelper';
+import commonHelper from '~/helpers/datetimeHelper';
 
 const { convertDate, convertDateTime, converTimeOnly } = commonHelper;
 const {

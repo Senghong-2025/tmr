@@ -4,6 +4,19 @@ body {
   font-family: "Roboto", Arial, Helvetica, sans-serif;
   font-weight: 400;
 }
+@property --navbar-height {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 52px;
+}
+
+.height-screen {
+  min-height: calc(100vh - var(--navbar-height));
+}
+
+.height-navbar {
+  height: var(--navbar-height);
+}
 
 option {
   background-color: #19263d;

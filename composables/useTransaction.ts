@@ -216,6 +216,36 @@ export default function useTransaction() {
     }
   };
 
+  let total = ref<number>(0);
+  const getTotalTransactionByMonth = async (month?: string) => {
+    isLoading.value = true;
+    const userId = localStorage.getItem('userId');
+    if (!userId) return 0;
+
+    const now = new Date();
+    const targetMonth = month || `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+    const q = query(
+      collection($db, 'transactions'),
+      where('userId', '==', userId)
+    );
+
+    const response = await getDocs(q);
+
+    total.value = response.docs
+      .map((doc) => doc.data() as ITransaction)
+      .filter((tx) => tx.date.startsWith(targetMonth))
+      .reduce((sum, tx) => {
+      if (tx.currency.toUpperCase() === "USD") {
+        return sum + Number(tx.amount);
+      } else if (tx.currency.toUpperCase() === "KHR") {
+        return sum + Number(tx.amount) / 4000;
+      }
+      return sum;
+      }, 0);
+      isLoading.value = false;
+  }
+
   return {
     formFields,
     model,
@@ -230,5 +260,7 @@ export default function useTransaction() {
     deleteTransaction,
     transactionGroups,
     transactionLoad,
+    getTotalTransactionByMonth,
+    total,
   };
 }

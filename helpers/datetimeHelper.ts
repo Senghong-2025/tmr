@@ -12,8 +12,15 @@ const converTimeOnly = (date: string | Date): string => {
     const d = new Date(date);
     return format(d, "hh:mm:ss a");
 }
+
+const getMonthOnly = (date: string | Date): string => {
+    const d = new Date(date);
+    return format(d, "MMMM");
+}
+
 export default {
     convertDate,
     convertDateTime,
-    converTimeOnly
+    converTimeOnly,
+    getMonthOnly,
 }

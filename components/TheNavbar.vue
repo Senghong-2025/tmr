@@ -1,11 +1,10 @@
 <template>
-    <header class="header bg-gray-600/10 text-white h-[52px] flex items-center shadow-xl">
+    <header class="header bg-gray-600/10 text-white height-navbar flex items-center shadow-xl">
         <div v-if="isAuth" class="container mx-auto flex items-center justify-between px-4">
-            <h1 class="text-2xl font-bold">Hi, {{ username }}</h1>
+            <h1 class="text-2xl font-bold" @click="$router.push('/')">Hi, {{ username }}</h1>
             <nav class="space-x-4">
                 <NuxtLink to="/transaction" class="hover:underline">Transaction</NuxtLink>
                 <NuxtLink to="/setting/profile" class="hover:underline">Setting</NuxtLink>
-                <!-- <NuxtLink href="#" class="hover:underline" @click="logout"> logout</NuxtLink> -->
             </nav>
         </div>
     </header>
