@@ -9,10 +9,10 @@
             <div v-if="isLoading" class="h-[32px] bg-gray-600/20 animate-pulse w-full">
             </div>
             <div v-else class="space-y-2">
-                <InputField type="month" v-model:model-value="selectedDate" @change="onChangeDate()"/>
+                <InputField type="month" v-model:model-value="selectedMonth" @change="onChangeDate()"/>
                 <div>
                     <span class="text-green-500">
-                        Total expense of {{ getMonthOnly(String(selectedDate) || new Date()) }}: 
+                        Total expense of {{ getMonthOnly(String(selectedMonth) || new Date()) }}: 
                     </span>
                     <span class="text-red-500">{{ total }} </span> USD
                 </div>
@@ -34,12 +34,13 @@ const { logout } = useAuth();
 const { getMonthOnly } = commonHelper;
 const { getTotalTransactionByMonth, total, isLoading } = useTransaction();
 
-const selectedDate = ref("");
+const now = new Date();
+const selectedMonth = ref(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`);
 
 const onChangeDate = async () => {
-  if (!selectedDate.value) return;
+  if (!selectedMonth.value) return;
 
-  const date = new Date(selectedDate.value);
+  const date = new Date(selectedMonth.value);
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
 
