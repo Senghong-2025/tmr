@@ -226,11 +226,7 @@ export default function useTransaction() {
       collection($db, 'transactions'),
       where('userId', '==', userId)
     );
-
-    console.log(month);
-
     const response = await getDocs(q);
-
     total.value = response.docs
       .map((doc) => doc.data() as ITransaction)
       .filter((tx) => tx.date.startsWith(targetMonth))

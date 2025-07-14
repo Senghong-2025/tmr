@@ -34,11 +34,19 @@ const { logout } = useAuth();
 const { getMonthOnly } = commonHelper;
 const { getTotalTransactionByMonth, total, isLoading } = useTransaction();
 
-const selectedDate = new Date().getMonth();
+const selectedDate = ref("");
 
-const onChangeDate =  async () => {
-    await getTotalTransactionByMonth(String(selectedDate));
-}
+const onChangeDate = async () => {
+  if (!selectedDate.value) return;
+
+  const date = new Date(selectedDate.value);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+
+  const formattedMonth = `${year}-${month}`;
+  await getTotalTransactionByMonth(formattedMonth);
+};
+
 onMounted(() => {
     const rawUser = localStorage.getItem("user");
     if (rawUser) {
