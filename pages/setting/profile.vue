@@ -8,8 +8,15 @@
         <div class="mt-4 flex justify-end">
             <div v-if="isLoading" class="h-[32px] bg-gray-600/20 animate-pulse w-full">
             </div>
-            <div v-else><span class="text-green-500">Total expense of {{ getMonthOnly(new Date()) }}:</span> <span
-                    class="text-red-500">{{ total }} </span> USD</div>
+            <div v-else class="space-y-2">
+                <InputField type="month" v-model:model-value="selectedDate" @change="onChangeDate()"/>
+                <div>
+                    <span class="text-green-500">
+                        Total expense of {{ getMonthOnly(String(selectedDate) || new Date()) }}: 
+                    </span>
+                    <span class="text-red-500">{{ total }} </span> USD
+                </div>
+            </div>
         </div>
     </div>
     <div class="fixed block bottom-2 bg-transparent right-2">
@@ -20,12 +27,18 @@
 import Button1 from '~/components/buttons/Button1.vue';
 import commonHelper from '~/helpers/datetimeHelper';
 import type { IUser } from '~/models/user';
+import InputField from '~/components/formfields/InputField.vue';
 
 const user = ref<IUser | null>(null);
 const { logout } = useAuth();
 const { getMonthOnly } = commonHelper;
 const { getTotalTransactionByMonth, total, isLoading } = useTransaction();
 
+const selectedDate = new Date().getMonth();
+
+const onChangeDate =  async () => {
+    await getTotalTransactionByMonth(String(selectedDate));
+}
 onMounted(() => {
     const rawUser = localStorage.getItem("user");
     if (rawUser) {

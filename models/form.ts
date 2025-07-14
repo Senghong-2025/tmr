@@ -4,6 +4,7 @@ export type TInputType =
   | "email"
   | "password"
   | "date"
+  | "month"
   | "datetime-local";
 export type TInputMode =
   | "text"

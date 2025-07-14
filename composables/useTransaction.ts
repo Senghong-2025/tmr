@@ -227,6 +227,8 @@ export default function useTransaction() {
       where('userId', '==', userId)
     );
 
+    console.log(month);
+
     const response = await getDocs(q);
 
     total.value = response.docs
