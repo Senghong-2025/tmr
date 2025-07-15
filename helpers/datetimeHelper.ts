@@ -18,9 +18,15 @@ const getMonthOnly = (date: string | Date): string => {
     return format(d, "MMMM");
 }
 
+const getMonthAndDate = (date: string | Date): string => {
+    const d = new Date(date);
+    return format(d, "MMMM dd");
+}
+
 export default {
     convertDate,
     convertDateTime,
     converTimeOnly,
     getMonthOnly,
+    getMonthAndDate,
 }

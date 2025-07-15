@@ -3,7 +3,7 @@ import type { IBarChart } from "~/models/chart";
 
 export default function useChart() {
     const { getTranscation, transactions, transactionGroups, isLoading } = useTransaction();
-    const { convertDate } = datetimeHelper;
+    const { getMonthAndDate } = datetimeHelper;
     const chartBarProperties = ref<IBarChart>({
         label: [],
         data: [],
@@ -29,7 +29,7 @@ export default function useChart() {
 
         filtered.forEach((tx) => {
             const txDate = new Date(tx.date)
-            const label = convertDate(txDate);
+            const label = getMonthAndDate(txDate);
             chartBarProperties.value.label.push(label)
             chartBarProperties.value.data.push(Number(tx.totalAmount))
         })
