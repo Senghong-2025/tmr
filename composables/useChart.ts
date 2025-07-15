@@ -10,8 +10,11 @@ export default function useChart() {
     });
 
     const chartBarMapping = () => {
-        isLoading.value = true;
+        isLoading.value = true
+
         const now = new Date()
+        now.setHours(0, 0, 0, 0)
+
         const sevenDaysAgo = new Date(now)
         sevenDaysAgo.setDate(now.getDate() - 6)
 
@@ -20,20 +23,30 @@ export default function useChart() {
             data: [],
         }
 
-        const filtered = transactionGroups.value
-            .filter((tx) => {
-                const txDate = new Date(tx.date)
-                return txDate >= sevenDaysAgo && txDate <= now
-            })
-            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+        const grouped: Record<string, number> = {}
 
-        filtered.forEach((tx) => {
+        transactionGroups.value.forEach((tx) => {
             const txDate = new Date(tx.date)
-            const label = getMonthAndDate(txDate);
-            chartBarProperties.value.label.push(label)
-            chartBarProperties.value.data.push(Number(tx.totalAmount))
+            txDate.setHours(0, 0, 0, 0)
+
+            if (txDate >= sevenDaysAgo && txDate <= now) {
+                const key = txDate.toISOString().split('T')[0]
+                grouped[key] = (grouped[key] || 0) + Number(tx.totalAmount)
+            }
         })
-        isLoading.value = false;
+
+        for (let i = 0; i < 7; i++) {
+            const day = new Date(sevenDaysAgo)
+            day.setDate(sevenDaysAgo.getDate() + i)
+
+            const key = day.toISOString().split('T')[0]
+            const label = getMonthAndDate(day)
+
+            chartBarProperties.value.label.push(label)
+            chartBarProperties.value.data.push(grouped[key] ?? 0)
+        }
+
+        isLoading.value = false
     }
 
     return {
