@@ -1,10 +1,10 @@
 <template>
     <div class="flex justify-center .height-screen">
-        <div v-if="isLoading" class="w-full max-w-sm flex justify-between items-end h-64 px-4">
+        <div v-if="isLoading('get')" class="w-full max-w-sm flex justify-between items-end h-64 px-4">
             <div v-for="i in 7" :key="i" class="w-8 bg-blue-300/40 rounded animate-pulse"
                 :style="{ height: `${Math.random() * 60 + 40}%` }"></div>
         </div>
-        <div v-if="!isLoading" class="max-w-sm">
+        <div v-if="!isLoading('get')" class="max-w-sm">
             <BarChart :property="chartBarProperties" />
         </div>
     </div>

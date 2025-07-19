@@ -6,7 +6,7 @@
             <p class="text-gray-500">Phone: {{ user?.phone }}</p>
         </div>
         <div class="mt-4 flex justify-end">
-            <div v-if="isLoading" class="h-[32px] bg-gray-600/20 animate-pulse w-full">
+            <div v-if="isLoading('get')" class="h-[32px] bg-gray-600/20 animate-pulse w-full">
             </div>
             <div v-else class="space-y-2">
                 <InputField type="month" v-model:model-value="selectedMonth" @change="onChangeDate()" />

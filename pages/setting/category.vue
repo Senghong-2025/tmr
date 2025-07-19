@@ -4,19 +4,19 @@
             <InputField v-model="model.name" type="text" placeholder="Category Name" />
             <InputField v-model="model.type" type="text" placeholder="Category Type" />
             <div class="w-full">
-                <Button1 v-if="!isEdit" @click="addCategory" class="w-full" name="Save" :disabled="isLoading"
-                    :loading="isLoading" />
+                <Button1 v-if="!isEdit" @click="addCategory" class="w-full" name="Save" :disabled="isLoading('get')"
+                    :loading="isLoading('add')" />
                 <div v-else class="flex gap-2 items-center w-full">
                     <Button1 @click="() => { isEdit = false; model.name = ''; model.type = ''; }" class="w-full"
-                        name="Cancel" type="info" :disabled="isLoading" :loading="isLoading" />
-                    <Button1 @click="updateCategory" class="w-full" name="Update" :disabled="isLoading"
-                        :loading="isLoading" />
+                        name="Cancel" type="info" :disabled="isLoading('get')" :loading="isLoading('get')" />
+                    <Button1 @click="updateCategory" class="w-full" name="Update" :disabled="isLoading('update')"
+                        :loading="isLoading('update')" />
                 </div>
             </div>
         </div>
         <div class="border-b my-2 border-gray-400"></div>
         <div class="app-grid">
-            <div v-if="isLoading" v-for="item in 5"
+            <div v-if="isLoading('get')" v-for="item in 5"
                 class="flex justify-between bg-gray-600/20 p-4 rounded-sm animate-pulse h-[52px]">
             </div>
             <div v-else v-for="category in categories"
@@ -36,7 +36,7 @@
             </div>
         </div>
     </div>
-    <DeleteModal :is-show-modal="isShowModal" :is-loading="isLoading" @delete="deleteCategory(id)"
+    <DeleteModal :is-show-modal="isShowModal" :is-loading="isLoading('delete')" @delete="deleteCategory"
         @close="isShowModal = false" />
 
 </template>
@@ -48,12 +48,6 @@ import { TrashIcon, PencilIcon } from '@heroicons/vue/24/solid';
 import useCategory from '~/composables/useCategory';
 import DeleteModal from '~/components/Modals/DeleteModal.vue';
 
-const id = ref('');
-const isShowModal = ref(false);
-const onClickDelete = (categoryId: string) => {
-    id.value = categoryId;
-    isShowModal.value = true;
-};
 const {
     categories,
     getCategory,
@@ -63,7 +57,9 @@ const {
     deleteCategory,
     isEdit,
     onClickEdit,
-    updateCategory
+    updateCategory,
+    isShowModal,
+    onClickDelete,
 } = useCategory();
 
 onMounted(() => {

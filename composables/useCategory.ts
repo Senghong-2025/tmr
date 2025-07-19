@@ -4,10 +4,13 @@ import type { ICategory, ICreateCategory } from "~/models/category";
 export default function useCategory() {
   const { $db } = useNuxtApp();
   const categories = ref<ICategory[]>([]);
-  const isLoading = ref(false);
+  const { isLoading, setLoading } = useLoading();
   const isEdit = ref(false);
+  const id = ref("");
+  const isShowModal = ref(false);
+
   const getCategory = async () => {
-    isLoading.value = true;
+    setLoading("get", true);
     try {
       const useId = localStorage.getItem("userId");
       const q = query(
@@ -22,7 +25,7 @@ export default function useCategory() {
     } catch (error) {
       console.error("Error fetching categories:", error);
     } finally {
-      isLoading.value = false;
+      setLoading("get", false);
     }
   };
 
@@ -33,7 +36,7 @@ export default function useCategory() {
     createdOn: "",
   });
   const addCategory = async () => {
-    isLoading.value = true;
+    setLoading('add', true);
     try {
       const useId = localStorage.getItem("userId");
       if (!useId) {
@@ -49,24 +52,30 @@ export default function useCategory() {
     } catch (error) {
       console.error("Error adding category:", error);
     } finally {
-      isLoading.value = false;
+      model.name = "";
+      model.type = "";
+      setLoading("add", false);
     }
   };
 
-  const deleteCategory = async (id: string) => {
-    isLoading.value = true;
+  const onClickDelete = (categoryId: string) => {
+    id.value = categoryId;
+    isShowModal.value = true;
+  };
+  const deleteCategory = async () => {
+    setLoading("delete", true);
     try {
-      const categoryRef = doc($db, "categories", id);
+      const categoryRef = doc($db, "categories", id.value);
       await deleteDoc(categoryRef);
-      categories.value = categories.value.filter((category) => category.id !== id);
+      categories.value = categories.value.filter((category) => category.id !== id.value);
     } catch (error) {
       console.error("Error deleting category:", error);
     } finally {
-      isLoading.value = false;
+      setLoading("delete", false);
+      isShowModal.value = false;
     }
   }
 
-  const id = ref("");
   const onClickEdit = (category: ICategory) => {
     isEdit.value = true;
     model.name = category.name;
@@ -77,7 +86,7 @@ export default function useCategory() {
   };
 
   const updateCategory = async () => {
-    isLoading.value = true;
+    setLoading("update", true);
     try {
       const categoryRef = doc($db, "categories", id.value);
       await updateDoc(categoryRef, {
@@ -93,7 +102,7 @@ export default function useCategory() {
     } catch (error) {
       console.error("Error updating category:", error);
     } finally {
-      isLoading.value = false;
+      setLoading("update", false);
     }
   }
 
@@ -107,5 +116,7 @@ export default function useCategory() {
     isEdit,
     onClickEdit,
     updateCategory,
+    onClickDelete,
+    isShowModal,
   };
 }
