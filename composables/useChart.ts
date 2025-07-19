@@ -18,11 +18,6 @@ export default function useChart() {
         const sevenDaysAgo = new Date(now)
         sevenDaysAgo.setDate(now.getDate() - 6)
 
-        chartBarProperties.value = {
-            label: [],
-            data: [],
-        }
-
         const grouped: Record<string, number> = {}
 
         transactionGroups.value.forEach((tx) => {
