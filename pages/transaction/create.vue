@@ -3,7 +3,7 @@
         <BodyHeader title="Create Transaction" route="/transaction" buttonName="Back" :is-button="true" class="mb-2" />
         <div class="flex justify-center w-full">
             <form class="md:w-[1000px] p-4 w-full bg-gray-600/20 shadow-xl shadow-gray-800 md:px-10 rounded-sm">
-                <div class="grid gap-2 mb-2">
+                <div class="grid gap-4 mb-2">
                     <div v-for="field in formFields" :key="field.model">
                         <SelectField required v-if="field.model === 'currency'" v-model="model[field.model]"
                             :label="field.label" :options="currencies.map(v => ({ label: v.code, value: v.code }))" />
@@ -17,7 +17,7 @@
                             :mode="field.mode" />
                     </div>
                 </div>
-                <Button1 type="primary" @click="addTranscation" :loading="isLoading" />
+                <Button1 type="primary" @click="addTranscation" :loading="isLoading('add')" />
             </form>
         </div>
     </div>

@@ -2,8 +2,8 @@
     <div class="p-4">
         <BodyHeader route="/transaction" title="Update Transaction" button-name="Back" is-button class="mb-2" />
         <div class="flex justify-center items-center">
-            <div :class="['bg-gray-600/20 w-[400px] md:w-[600px] rounded-lg shadow-sm', { 'bg-blue-200': isLoading }]">
-                <div class="p-4">
+            <div :class="['bg-gray-600/20 w-[400px] md:w-[600px] rounded-lg shadow-sm', { 'bg-blue-200': isLoading('get') }]">
+                <div class="p-4 flex-col flex gap-4">
                     <input-field required label="Title" mode="text" v-model="model.title" type="text" />
                     <input-field required label="Amount" mode="decimal" v-model="model.amount" type="text" />
                     <select-field required label="Currency" v-model="model.currency"
@@ -15,14 +15,14 @@
                         :options="categories.map((v) => ({ label: v.name, value: v.name }))" />
                     <input-field required label="Note" v-model="model.note" type="text" />
                     <div class="flex justify-end mt-4 gap-2">
-                        <Button1 @click="updateTransaction(id)" name="Update" :loading="isLoading" />
-                        <Button1 @click="isShowModal = true" name="Delete" :loading="isLoading" type="danger" />
+                        <Button1 @click="updateTransaction(id)" name="Update" :loading="isLoading('update')" />
+                        <Button1 @click="isShowModal = true" name="Delete" :loading="isLoading('delete')" type="danger" />
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <ModalsDeleteModal :isShowModal="isShowModal" :isLoading="isLoading" @delete="handleDelete()" @close="isShowModal = false" />
+    <ModalsDeleteModal :isShowModal="isShowModal" :isLoading="isLoading('get')" @delete="handleDelete()" @close="isShowModal = false" />
 </template>
 <script lang="ts" setup>
 import InputField from '~/components/formfields/InputField.vue';

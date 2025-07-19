@@ -2,7 +2,6 @@ import { addDoc, collection, deleteDoc, doc, getDocs, query, updateDoc, where } 
 import type { TInputMode, TInputType } from "~/models/form";
 import type { ICreateTransaction, ITransaction, ITransactionGroupDisplay } from "~/models/transaction";
 import { notify } from "~/composables/useNotification";
-import { is, tr } from "date-fns/locale";
 
 interface IFormField {
   label: string;
@@ -14,9 +13,9 @@ interface IFormField {
 
 export default function useTransaction() {
   const { $db } = useNuxtApp();
-  const isLoading = ref<boolean>(false);
   const transactions = ref<ITransaction[]>([]);
   const { categories, getCategory } = useCategory();
+  const {isLoading, setLoading } = useLoading();
 
   const model = reactive<ICreateTransaction>({
     userId: "",
@@ -61,7 +60,7 @@ export default function useTransaction() {
 
   const addTranscation = async () => {
     const userId = localStorage.getItem("userId");
-    isLoading.value = true;
+    setLoading("add", true);
     try {
       validateRequiredFields(model, requiredFields);
       if (userId) {
@@ -84,7 +83,7 @@ export default function useTransaction() {
         "error"
       );
     } finally {
-      isLoading.value = false;
+      setLoading("add", false);
     }
   };
 
@@ -93,7 +92,7 @@ export default function useTransaction() {
   }
 
   const updateTransaction = async (id: string) => {
-    isLoading.value = true;
+    setLoading("update", true);
     try {
       validateRequiredFields(model, requiredFields);
       const userId = localStorage.getItem("userId");
@@ -116,7 +115,7 @@ export default function useTransaction() {
         "error"
       );
     } finally {
-      isLoading.value = false;
+      setLoading("update", false);
     }
   };
 
@@ -127,7 +126,7 @@ export default function useTransaction() {
 
 
   const getTranscation = async () => {
-    isLoading.value = true;
+    setLoading("get", true);
     try {
       const userId = localStorage.getItem('userId');
       if (!userId) {
@@ -188,12 +187,12 @@ export default function useTransaction() {
     } catch (error) {
       console.error('Error fetching transactions:', error);
     } finally {
-      isLoading.value = false;
+      setLoading("get", false)
     }
   };
 
   const deleteTransaction = async (id: string) => {
-    isLoading.value = true;
+    setLoading("delete", true);
     try {
       const transactionRef = doc($db, "transactions", id);
       await deleteDoc(transactionRef);
@@ -208,14 +207,14 @@ export default function useTransaction() {
         "error"
       );
     } finally {
-      isLoading.value = false;
+      setLoading("delete", false);
       navigateTo("/transaction");
     }
   };
 
   let total = ref<number>(0);
   const getTotalTransactionByMonth = async (month?: string) => {
-    isLoading.value = true;
+    setLoading("get", true);
     const userId = localStorage.getItem('userId');
     if (!userId) return 0;
 
@@ -238,7 +237,7 @@ export default function useTransaction() {
       }
       return sum;
       }, 0);
-      isLoading.value = false;
+      setLoading("get", false);
   }
 
   return {
