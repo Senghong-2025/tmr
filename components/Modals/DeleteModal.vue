@@ -1,11 +1,15 @@
 <template>
-    <div v-if="modal" class="fixed bottom-0 rounded-t-xl left-0 right-0 bg-gray-600/60 p-4 grid gap-4">
-        <Button1 @click="handleDelete" name="Ok" type="danger" :loading="isLoading" />
-        <Button1 @click="modal = false" name="No" type="info" />
+    <div v-if="modal" class="fixed inset-0 min-h-screen w-full z-10 bg-black/10" @click="$emit('close')">
+        <div class="absolute bottom-0 left-0 right-0 z-20 bg-gray-600/60 p-4 grid gap-4 rounded-t-xl" role="dialog"
+            aria-modal="true" @click.stop>
+            <Button1 @click="handleDelete" name="Ok" type="danger" :loading="isLoading" />
+            <Button1 @click="$emit('close')" name="No" type="info" />
+        </div>
     </div>
 </template>
 
 <script lang="ts" setup>
+import { stop } from 'vue';
 import Button1 from '~/components/buttons/Button1.vue';
 
 const props = defineProps<{
