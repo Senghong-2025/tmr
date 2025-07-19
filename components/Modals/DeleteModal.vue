@@ -1,9 +1,9 @@
 <template>
-    <div v-if="modal" class="fixed inset-0 min-h-screen w-full z-10 bg-black/10" @click="$emit('close')">
+    <div v-if="modal" class="fixed inset-0 w-full h-[100dvh] z-10 bg-black/10" @click="$emit('close')">
         <div class="absolute bottom-0 left-0 right-0 z-20 bg-gray-600/60 p-4 grid gap-4 rounded-t-xl" role="dialog"
-            aria-modal="true" @click.stop>
-            <Button1 @click="handleDelete" name="Ok" type="danger" :loading="isLoading" />
-            <Button1 @click="$emit('close')" name="No" type="info" />
+            aria-modal="true" @click.stop @touchstart.stop>
+            <Button1 @click="handleDelete" name="OK" type="danger" :loading="isLoading" />
+            <Button1 @click="$emit('close')" name="Cancel" type="info" />
         </div>
     </div>
 </template>
