@@ -9,7 +9,7 @@
             'relative w-full',
             disabled ? 'opacity-50 cursor-not-allowed' : '',
         ]">
-            <input :type="type" v-model="model" :placeholder="placeholder" :disabled="disabled" @change="emit('change')" @keydown="emit('keydown')"
+            <input :type="type" v-model="model" :placeholder="placeholder" :disabled="disabled" @change="emit('change')" @keydown="emit('keydown')" :max="maxDate ?? ''"
                 class="w-full px-4 py-2 text-sm rounded-sm bg-black/10 shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all " :inputmode="mode || 'text'"/>
         </div>
 
@@ -29,6 +29,8 @@ const props = defineProps<{
     error?: string
     required?: boolean
     mode?: TInputMode
+    maxDate?: string
+    minDate?: string
 }>()
 
 const emit = defineEmits<{

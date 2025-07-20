@@ -58,5 +58,6 @@ export default function useChart() {
         isLoading,
         startDate,
         onChangeDate,
+        past7Days,
     }
 };
