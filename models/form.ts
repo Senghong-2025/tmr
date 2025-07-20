@@ -1,5 +1,6 @@
 export type TInputType =
   | "text"
+  | "tel"
   | "number"
   | "email"
   | "password"

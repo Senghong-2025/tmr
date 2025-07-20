@@ -6,10 +6,10 @@
         :key="index"
         class="flex items-start gap-3 px-5 py-4 rounded-xl shadow-lg text-white relative overflow-hidden ring-1 ring-black/5 mt-2"
         :class="{
-          'bg-green-500': n.type === 'success',
-          'bg-red-500': n.type === 'error',
-          'bg-yellow-400 text-gray-900': n.type === 'warning',
-          'bg-blue-500': n.type === 'info'
+          'bg-green-500/50': n.type === 'success',
+          'bg-red-500/50': n.type === 'error',
+          'bg-yellow-400/50 text-gray-900': n.type === 'warning',
+          'bg-blue-500/50': n.type === 'info'
         }"
       >
         <span class="mt-1">

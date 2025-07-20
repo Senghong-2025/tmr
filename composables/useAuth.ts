@@ -14,15 +14,38 @@ export default function useAuth() {
   const registerModel = ref<IRegister>({
     email: "",
     password: "",
+    confirmPassword: "",
     username: "",
     phone: "",
-    createdOn: "",
+    createdOn: new Date().toISOString(),
   });
+
+  const isValidPassword = () => {
+    const password = registerModel.value.password;
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    return hasLowerCase && hasNumber && password.length >= 6
+  }
   const register = async () => {
+
+    if (!isValidPassword()) {
+      return notify("Password must be at least 6 characters long and contain at least one lowercase letter and one number.", "error")
+    }
+
+    if(registerModel.value.password !== registerModel.value.confirmPassword)
+      return notify("Password does not match.", "error");
+
+    const emptyFields = Object.entries(registerModel.value)
+      .filter(([_, value]) => value === "")
+      .map(([key]) => key);
+
+    if (emptyFields.length > 0) {
+      return notify(`Please enter ${emptyFields.join(", ")}`, "error");
+    }
+
     loading.value = true;
-    error.value = null;
     try {
-      const request: IRegister = {
+      const request: Omit<IRegister, "confirmPassword"> = {
         email: registerModel.value.email,
         password: registerModel.value.password,
         username: registerModel.value.username,
@@ -34,21 +57,21 @@ export default function useAuth() {
         request.email,
         request.password
       );
-
       const userId = userCredential.user.uid;
 
-      await setDoc(doc($db, "users", userId), {
+      const response = await setDoc(doc($db, "users", userId), {
         email: userCredential.user.email,
         username: request.username,
         phone: request.phone,
         createdOn: new Date().toISOString(),
       });
-
+      if(userId) {
+        navigateTo("/login");
+        notify("Success", "success");
+      }
       loading.value = false;
     } catch (err: any) {
-      error.value = err.message;
       loading.value = false;
-      return null;
     }
   };
 
@@ -57,6 +80,9 @@ export default function useAuth() {
     password: "",
   });
   const login = async () => {
+    if (!loginModel.value.email || !loginModel.value.password)
+      return notify("Please enter email and password.", "error");
+
     loading.value = true;
     try {
       const response = await signInWithEmailAndPassword(

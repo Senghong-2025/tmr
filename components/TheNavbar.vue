@@ -3,8 +3,12 @@
         <div v-if="isAuth" class="container mx-auto flex items-center justify-between px-4">
             <h1 class="text-2xl font-bold" @click="$router.push('/')">Hi, {{ username }}</h1>
             <nav class="space-x-4">
-                <NuxtLink to="/transaction" class="hover:underline">Transaction</NuxtLink>
-                <NuxtLink to="/setting/profile" class="hover:underline">Setting</NuxtLink>
+                <NuxtLink
+                    v-for="route in mainRoutes" :to="route.path" 
+                    class="hover:underline"
+                    :class="{'text-green-500': isActivedMainRoute(route)}"
+                    >{{ route.name }}
+                </NuxtLink>
             </nav>
         </div>
     </header>
@@ -12,7 +16,8 @@
 <script lang="ts" setup>
 import type { IUser } from '~/models/user';
 
-const { logout, loading, isAuth } = useAuth();
+const { isAuth } = useAuth();
+const { mainRoutes, isActivedMainRoute } = useNavbar();
 
 const username = ref("");
 const getUsername = () => {

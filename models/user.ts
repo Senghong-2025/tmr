@@ -3,6 +3,7 @@ export interface IRegister {
   phone: string;
   email: string;
   password: string;
+  confirmPassword: string;
   createdOn: string;
 }
 
