@@ -5,7 +5,7 @@
 <script lang="ts" setup>
 
 const props = defineProps<{
-  property: IBarChart
+  property: IBarChart,
 }>();
 import {
   Chart as ChartJS,
@@ -51,6 +51,14 @@ const chartOptions: ChartOptions<ChartType> = {
       text: 'Past 7 Days Expenses',
       color: '#ffffff'
     },
+    tooltip: {
+      callbacks: {
+        label: function (context) {
+          const value = context.parsed.y;
+          return `${value} $`;
+        }
+      }
+    }
   },
   scales: {
     x: {
@@ -63,7 +71,8 @@ const chartOptions: ChartOptions<ChartType> = {
     },
     y: {
       ticks: {
-        color: '#FFFFFF' 
+        color: '#FFFFFF',
+        callback: (value) => value + " $",
       },
       grid: {
         color: 'rgba(255, 255, 255, 0.1)' 
