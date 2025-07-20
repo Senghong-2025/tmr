@@ -2,25 +2,25 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAagApPRlJt93yoZCqimncOev-ULUEOMPQ",
-  authDomain: "tukdak.firebaseapp.com",
-  projectId: "tukdak",
-  storageBucket: "tukdak.firebasestorage.app",
-  messagingSenderId: "1007943982228",
-  appId: "1:1007943982228:web:433b45145789c73fd46881",
-  measurementId: "G-ZB99XBKTPT"
-};
-
-
-// Initialize Firebase once
-const app = initializeApp(firebaseConfig)
-
-// Init services
-const auth = getAuth(app)
-const db = getFirestore(app)
 
 export default defineNuxtPlugin(() => {
+  const config = useRuntimeConfig()
+  const firebaseConfig = {
+    apiKey: config.public.firebaseApiKey,
+    authDomain: config.public.firebaseAuthDomain,
+    projectId: config.public.firebaseProjectId,
+    storageBucket: config.public.firebaseStorageBucket,
+    messagingSenderId: config.public.firebaseMessagingSenderId,
+    appId: config.public.firebaseAppId,
+    measurementId: config.public.firebaseMeasurementId
+  };
+    
+  const app = initializeApp(firebaseConfig)
+
+  const auth = getAuth(app)
+
+  const db = getFirestore(app)
+  
   return {
     provide: {
       auth,
