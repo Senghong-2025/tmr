@@ -2,8 +2,7 @@ import datetimeHelper from "~/helpers/datetimeHelper";
 import type { IBarChart } from "~/models/chart";
 
 export default function useChart() {
-    const { getTranscation, transactions, transactionGroups } = useTransaction();
-    const { isLoading, setLoading } = useLoading();
+    const { getTranscation, transactions, transactionGroups, isLoading } = useTransaction();
     const { getMonthAndDate } = datetimeHelper;
     const chartBarProperties = ref<IBarChart>({
         label: [],
@@ -11,7 +10,6 @@ export default function useChart() {
     });
 
     const chartBarMapping = () => {
-        setLoading("get", true);
         const now = new Date()
         now.setHours(0, 0, 0, 0)
 
@@ -40,7 +38,6 @@ export default function useChart() {
             chartBarProperties.value.label.push(label)
             chartBarProperties.value.data.push(grouped[key] ?? 0)
         }
-        setLoading("get", false);
     }
 
     return {
