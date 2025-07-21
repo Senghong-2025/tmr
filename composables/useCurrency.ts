@@ -16,6 +16,10 @@ export default function useCurrency() {
       const querySnapshot = await getDocs(q);
       if (querySnapshot.empty) {
         currencies.value = [{
+          symbol: "៛",
+          code: "KHR",
+        },
+        {
           symbol: "$",
           code: "USD",
         }];
