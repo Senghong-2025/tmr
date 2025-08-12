@@ -28,7 +28,7 @@
                                 <p class="text-xs text-gray-300">{{ converTimeOnly(transaction.date) }}</p>
                             </div>
                             <span class="text-sm font-semibold">
-                                {{ transaction.amount }} {{ transaction.currency }}
+                                {{ transaction.amountForDisplay }} {{ transaction.currency }}
                             </span>
                         </div>
                     </div>

@@ -14,7 +14,7 @@
                     <span class="text-green-500">
                         Total expense of {{ getMonthOnly(String(selectedMonth) || new Date()) }}:
                     </span>
-                    <span class="text-red-500">{{ total }} </span> USD
+                    <span class="text-red-500">{{ textHelper.convertAmountWithoutRouteUp(total) }} </span> USD
                 </div>
             </div>
         </div>
@@ -27,6 +27,7 @@
 import Button1 from '~/components/buttons/Button1.vue';
 import InputField from '~/components/formfields/InputField.vue';
 import useProfile from '~/composables/useProfile';
+import textHelper from '~/helpers/textHelper';
 
 const {
     user,

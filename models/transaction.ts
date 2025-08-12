@@ -1,3 +1,4 @@
+import textHelper from "@/helpers/textHelper";
 export interface ICreateTransaction {
   userId: string;
   title: string;
@@ -21,9 +22,28 @@ export interface ITransaction {
   note: string;
 }
 
+export class Transaction implements ITransaction {
+  id!: string;
+  category!: string;
+  title!: string;
+  type!: string;
+  amount!: string;
+  currency!: string;
+  date!: string;
+  note!: string;
+
+  constructor(init: ITransaction) {
+    Object.assign(this, init);
+  }
+
+  get amountForDisplay(){
+    return textHelper.convertAmountWithoutRouteUp(Number(this.amount));
+  };
+}
+
 export interface ITransactionGroupDisplay {
   date: string;
-  transactions: ITransaction[];
+  transactions: Transaction[];
   totalAmount: number;
   totalAmountKhr?: number;
 }

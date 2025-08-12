@@ -1,6 +1,6 @@
 import { addDoc, collection, deleteDoc, doc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import type { TInputMode, TInputType } from "~/models/form";
-import type { ICreateTransaction, ITransaction, ITransactionGroupDisplay } from "~/models/transaction";
+import { Transaction, type ICreateTransaction, type ITransaction, type ITransactionGroupDisplay } from "~/models/transaction";
 import { notify } from "~/composables/useNotification";
 
 interface IFormField {
@@ -13,7 +13,7 @@ interface IFormField {
 
 export default function useTransaction() {
   const { $db } = useNuxtApp();
-  const transactions = ref<ITransaction[]>([]);
+  const transactions = ref<Transaction[]>([]);
   const { categories, getCategory } = useCategory();
   const {isLoading, setLoading } = useLoading();
 
@@ -140,7 +140,7 @@ export default function useTransaction() {
       );
 
       const response = await getDocs(q);
-      transactions.value = response.docs
+      const result = response.docs
         .map((doc) => {
           const data = doc.data() as Omit<ITransaction, "id">;
           return {
@@ -151,9 +151,8 @@ export default function useTransaction() {
         .sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );
-
-      // Group transactions by date (YYYY-MM-DD)
-      const grouped: Record<string, ITransaction[]> = {};
+      transactions.value = result.map((item) => new Transaction(item));
+      const grouped: Record<string, Transaction[]> = {};
 
       transactions.value.forEach((tx) => {
         const dateKey = tx.date.split('T')[0];
