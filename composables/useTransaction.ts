@@ -15,7 +15,7 @@ export default function useTransaction() {
   const { $db } = useNuxtApp();
   const transactions = ref<Transaction[]>([]);
   const { categories, getCategory } = useCategory();
-  const {isLoading, setLoading } = useLoading();
+  const { isLoading, setLoading } = useLoading();
 
   const model = reactive<ICreateTransaction>({
     userId: "",
@@ -124,6 +124,8 @@ export default function useTransaction() {
     () => []
   );
 
+  const searchModel = ref('');
+  const filteredTransactionGroups = ref<typeof transactionGroups.value>([]);
 
   const getTranscation = async () => {
     setLoading("get", true);
@@ -187,6 +189,7 @@ export default function useTransaction() {
       console.error('Error fetching transactions:', error);
     } finally {
       setLoading("get", false)
+      filteredTransactionGroups.value = transactionGroups.value;
     }
   };
 
@@ -229,16 +232,55 @@ export default function useTransaction() {
       .map((doc) => doc.data() as ITransaction)
       .filter((tx) => tx.date.startsWith(targetMonth))
       .reduce((sum, tx) => {
-      if (tx.currency.toUpperCase() === "USD") {
-        return sum + Number(tx.amount);
-      } else if (tx.currency.toUpperCase() === "KHR") {
-        return sum + Number(tx.amount) / 4000;
-      }
-      return sum;
+        if (tx.currency.toUpperCase() === "USD") {
+          return sum + Number(tx.amount);
+        } else if (tx.currency.toUpperCase() === "KHR") {
+          return sum + Number(tx.amount) / 4000;
+        }
+        return sum;
       }, 0);
-      setLoading("get", false);
+    setLoading("get", false);
   }
 
+  const onSearch = () => {
+    if (!searchModel.value) {
+      filteredTransactionGroups.value = transactionGroups.value;
+      return;
+    }
+
+    const keyword = searchModel.value.toLowerCase();
+
+    filteredTransactionGroups.value = transactionGroups.value
+      .map((group) => {
+        const filteredTx = group.transactions.filter((tx) =>
+          Object.values(tx).some((val) =>
+            String(val).toLowerCase().includes(keyword)
+          )
+        );
+
+        return {
+          ...group,
+          transactions: filteredTx,
+          totalAmount: filteredTx.reduce(
+            (sum, tx) =>
+              sum +
+              (tx.currency === 'USD'
+                ? Number(tx.amount)
+                : Number(tx.amount) / 4000),
+            0
+          ),
+          totalAmountKhr: filteredTx.reduce(
+            (sum, tx) =>
+              sum +
+              (tx.currency === 'KHR'
+                ? Number(tx.amount)
+                : Number(tx.amount) * 4000),
+            0
+          ),
+        };
+      })
+      .filter((group) => group.transactions.length > 0);
+  };
   return {
     formFields,
     model,
@@ -254,5 +296,8 @@ export default function useTransaction() {
     transactionGroups,
     getTotalTransactionByMonth,
     total,
+    searchModel,
+    onSearch,
+    filteredTransactionGroups,
   };
 }
