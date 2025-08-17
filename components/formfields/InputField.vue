@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full">
+    <div class="w-full relative">
         <label v-if="label" class="block mb-1 text-sm font-medium text-gray-300">
             <span v-if="required" class="text-red-500 ml-1">*</span>
             {{ label }}
@@ -14,6 +14,7 @@
         </div>
 
         <p v-if="error" class="mt-1 text-sm text-red-500">{{ error }}</p>
+        <slot/>
     </div>
 </template>
 

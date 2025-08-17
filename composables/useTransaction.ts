@@ -281,6 +281,12 @@ export default function useTransaction() {
       })
       .filter((group) => group.transactions.length > 0);
   };
+
+  const isShowClearBtn = computed(() => searchModel.value.length > 0);
+  const onClear = () => {
+    searchModel.value = "";
+    onSearch();
+  };
   return {
     formFields,
     model,
@@ -299,5 +305,7 @@ export default function useTransaction() {
     searchModel,
     onSearch,
     filteredTransactionGroups,
+    onClear,
+    isShowClearBtn,
   };
 }
