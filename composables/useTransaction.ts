@@ -1,4 +1,4 @@
-import { addDoc, collection, deleteDoc, doc, getDocs, query, updateDoc, where } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getCountFromServer, getDocs, limit, orderBy, query, startAfter, updateDoc, where } from "firebase/firestore";
 import type { TInputMode, TInputType } from "~/models/form";
 import { Transaction, type ICreateTransaction, type ITransaction, type ITransactionGroupDisplay } from "~/models/transaction";
 import { notify } from "~/composables/useNotification";
@@ -25,6 +25,7 @@ export default function useTransaction() {
     date: "",
     note: "",
     createdOn: "",
+    modifiedOn: "",
     title: "",
     type: "Outcome",
   });
@@ -98,7 +99,7 @@ export default function useTransaction() {
       const userId = localStorage.getItem("userId");
       if (userId) {
         model.userId = userId;
-        model.createdOn = new Date().toISOString();
+        model.modifiedOn = new Date().toISOString();
         const transactionRef = doc($db, "transactions", id);
         await updateDoc(transactionRef, {
           ...toRaw(model),
@@ -124,35 +125,77 @@ export default function useTransaction() {
     () => []
   );
 
-  const searchModel = ref('');
+  const searchModel = reactive<Partial<ICreateTransaction>>({
+    title: "",
+    category: "",
+    amount: "",
+    date: "",
+  });
   const filteredTransactionGroups = ref<typeof transactionGroups.value>([]);
 
+  const transactionRef = ref<HTMLElement | null>(null);
+  const pastDays = ref(25);
+  const handleScroll = async () => {
+    if (!transactionRef.value) return;
+    const { scrollTop, scrollHeight, clientHeight } = transactionRef.value;
+    const isAtBottom = scrollTop + clientHeight >= scrollHeight - 0; // tolerance
+    if (isAtBottom) {
+      await getTranscation();
+    }
+  };
+
+  const lastVisible = ref();
+  const allTransactions = ref<any[]>([]);
+  const isFinnal = ref(false);
+  const fetchTransactions = async () => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      console.warn("User ID not found in localStorage");
+      return;
+    }
+    const twoWeeksAgo = new Date();
+    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - pastDays.value);
+
+    let q;
+    if (lastVisible.value) {
+      q = query(
+        collection($db, "transactions"),
+        where("userId", "==", userId),
+        where("date", ">=", twoWeeksAgo.toISOString()),
+        orderBy("date", "desc"),
+        startAfter(lastVisible.value),
+        limit(25)
+      );
+    } else {
+      q = query(
+        collection($db, "transactions"),
+        where("userId", "==", userId),
+        where("date", ">=", twoWeeksAgo.toISOString()),
+        orderBy("date", "desc"),
+        limit(25)
+      );
+    }
+    const response = await getDocs(q);
+    lastVisible.value = response.docs[response.docs.length - 1];
+    const newTransactions = response.docs;
+    allTransactions.value.push(...newTransactions);
+    if (newTransactions.length < 25) {
+      isFinnal.value = true;
+    }
+  };
   const getTranscation = async () => {
+    if (isFinnal.value) return;
     setLoading("get", true);
     try {
-      const userId = localStorage.getItem('userId');
-      if (!userId) {
-        console.warn('User ID not found in localStorage');
-        return;
-      }
-
-      const q = query(
-        collection($db, 'transactions'),
-        where('userId', '==', userId)
-      );
-
-      const response = await getDocs(q);
-      const result = response.docs
+      await fetchTransactions();
+      const result = allTransactions.value
         .map((doc) => {
           const data = doc.data() as Omit<ITransaction, "id">;
           return {
             id: doc.id,
             ...data,
           };
-        })
-        .sort(
-          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-        );
+        });
       transactions.value = result.map((item) => new Transaction(item));
       const grouped: Record<string, Transaction[]> = {};
 
@@ -162,7 +205,6 @@ export default function useTransaction() {
         grouped[dateKey].push(tx);
       });
 
-      // Transform to array with total amounts
       transactionGroups.value = Object.entries(grouped).map(
         ([date, transactions]) => ({
           date,
@@ -243,48 +285,12 @@ export default function useTransaction() {
   }
 
   const onSearch = () => {
-    if (!searchModel.value) {
-      filteredTransactionGroups.value = transactionGroups.value;
-      return;
-    }
-
-    const keyword = searchModel.value.toLowerCase();
-
-    filteredTransactionGroups.value = transactionGroups.value
-      .map((group) => {
-        const filteredTx = group.transactions.filter((tx) =>
-          Object.values(tx).some((val) =>
-            String(val).toLowerCase().includes(keyword)
-          )
-        );
-
-        return {
-          ...group,
-          transactions: filteredTx,
-          totalAmount: filteredTx.reduce(
-            (sum, tx) =>
-              sum +
-              (tx.currency === 'USD'
-                ? Number(tx.amount)
-                : Number(tx.amount) / 4000),
-            0
-          ),
-          totalAmountKhr: filteredTx.reduce(
-            (sum, tx) =>
-              sum +
-              (tx.currency === 'KHR'
-                ? Number(tx.amount)
-                : Number(tx.amount) * 4000),
-            0
-          ),
-        };
-      })
-      .filter((group) => group.transactions.length > 0);
+    // filteredTransactionGroups.value = transactionGroups.value;
   };
 
-  const isShowClearBtn = computed(() => searchModel.value.length > 0);
+  const isShowClearBtn = computed(() => false);
   const onClear = () => {
-    searchModel.value = "";
+    // searchModel.value = "";
     onSearch();
   };
   return {
@@ -307,5 +313,8 @@ export default function useTransaction() {
     filteredTransactionGroups,
     onClear,
     isShowClearBtn,
+    handleScroll,
+    transactionRef,
+    isFinnal,
   };
 }

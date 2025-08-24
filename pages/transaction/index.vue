@@ -1,7 +1,7 @@
 <template>
     <div class="p-4 overflow-hidden">
         <BodyHeader route="transaction/create" title="Transaction" button-name="New" is-button class="mb-2" />
-        <div v-if="isLoading('get')">
+        <div v-if="isLoading('get') && transactions.length === 0" class="w-full">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div v-for="item in 10" :key="item">
                     <div class="flex items-center p-4 h-[52px] bg-gray-600/20 rounded-sm animate-pulse space-x-4">
@@ -9,8 +9,8 @@
                 </div>
             </div>
         </div>
-        <div v-else class="h-[calc(100vh-250px)] overflow-y-auto">
-            <div class="flex gap-2 items-center py-2">
+        <div v-else @scroll="handleScroll" class="h-[calc(100vh-250px)] overflow-y-auto transaction-list" ref="transactionRef">
+            <!-- <div class="flex gap-2 items-center py-2">
                 <div>
                     Search
                 </div>
@@ -25,7 +25,7 @@
                     class="bg-blue-900 shrink h-[38px] w-[100px] flex justify-center rounded-md items-center">
                     <img class="w-4 h-4 invert-[100%]" :src="SearchIcon" alt="search icon">
                 </button>
-            </div>
+            </div> -->
             <div v-for="(group, index) in filteredTransactionGroups" :key="index" class="grid relative">
                 <div
                     class="flex w-full border-b-1 text-sm border-gray-300 bg-gray-700 py-2 px-2 z-10 mb-2 text-green-500 sticky top-0">
@@ -56,8 +56,10 @@
                     <div class="text-red-500 flex flex-col items-end">
                         <span>{{ group.totalAmount }} USD($)</span>
                         <span v-if="group.totalAmountKhr">{{ group.totalAmountKhr }} KHR(៛)</span>
-
                     </div>
+                </div>
+                <div v-if="filteredTransactionGroups.length - 1 === index && !isFinnal" class="w-full py-3 text-center">
+                    <span>Getting new ...</span>
                 </div>
             </div>
         </div>
@@ -71,7 +73,7 @@ import InputField from '~/components/formfields/InputField.vue';
 import SearchIcon from "@/assets/icons/search.png"
 import RemoveIcon from "@/assets/icons/cancel.png"
 
-const { convertDate, convertDateTime, converTimeOnly } = commonHelper;
+const { convertDate, converTimeOnly } = commonHelper;
 const {
     transactions,
     getTranscation,
@@ -83,8 +85,10 @@ const {
     filteredTransactionGroups,
     onClear,
     isShowClearBtn,
+    handleScroll,
+    transactionRef,
+    isFinnal
 } = useTransaction();
-
 
 onMounted(() => {
     getTranscation();

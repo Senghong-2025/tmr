@@ -9,8 +9,9 @@ export interface ICreateTransaction {
   date: string;
   note: string;
   createdOn: string;
+  modifiedOn: string;
 }
-
+  
 export interface ITransaction {
   id: string;
   category: string;
