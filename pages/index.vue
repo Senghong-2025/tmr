@@ -17,9 +17,9 @@
 import BarChart from '@/components/charts/BarChart.vue';
 import InputField from '@/components/formfields/InputField.vue';
 
-const { chartBarProperties, getTranscation, chartBarMapping, isLoading, startDate, onChangeDate, past7Days } = useChart();
+const { chartBarProperties, getTransaction, chartBarMapping, isLoading, startDate, onChangeDate, past7Days } = useChart();
 onMounted(async () => {
-    await getTranscation();
+    await getTransaction();
     chartBarMapping();
 });
 </script>

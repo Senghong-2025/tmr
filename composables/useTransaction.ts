@@ -136,11 +136,11 @@ export default function useTransaction() {
   const transactionRef = ref<HTMLElement | null>(null);
   const pastDays = ref(25);
   const handleScroll = async () => {
-    if (!transactionRef.value) return;
+    if (!transactionRef.value || isLoading('get') || isFinnal.value) return;
     const { scrollTop, scrollHeight, clientHeight } = transactionRef.value;
-    const isAtBottom = scrollTop + clientHeight >= scrollHeight - 0; // tolerance
+    const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10; // add small tolerance
     if (isAtBottom) {
-      await getTranscation();
+      await getTransaction();
     }
   };
 
@@ -153,6 +153,7 @@ export default function useTransaction() {
       console.warn("User ID not found in localStorage");
       return;
     }
+
     const twoWeeksAgo = new Date();
     twoWeeksAgo.setDate(twoWeeksAgo.getDate() - pastDays.value);
 
@@ -175,8 +176,12 @@ export default function useTransaction() {
         limit(25)
       );
     }
+
     const response = await getDocs(q);
-    lastVisible.value = response.docs[response.docs.length - 1];
+    if (!response.empty) {
+      lastVisible.value = response.docs[response.docs.length - 1];
+    }
+
     const newTransactions = response.docs.map((doc) => {
       const data = doc.data() as Omit<ITransaction, "id">;
       return {
@@ -184,52 +189,54 @@ export default function useTransaction() {
         ...data,
       };
     });
-    allTransactions.value.push(...Array.from(new Set(newTransactions)));
+
+    // Deduplicate by id
+    const existingIds = new Set(allTransactions.value.map((t) => t.id));
+    const uniqueNew = newTransactions.filter((t) => !existingIds.has(t.id));
+
+    allTransactions.value.push(...uniqueNew);
+
     if (newTransactions.length < 25) {
       isFinnal.value = true;
     }
   };
-  const getTranscation = async () => {
-    if (isFinnal.value) return;
+
+  const getTransaction = async () => {
+    if (isFinnal.value || isLoading('get')) return;
+
     setLoading("get", true);
     try {
       await fetchTransactions();
 
-      transactions.value = allTransactions.value.map((item) => new Transaction(item));
-      const grouped: Record<string, Transaction[]> = {};
+      transactions.value = allTransactions.value.map(
+        (item) => new Transaction(item)
+      );
 
+      const grouped: Record<string, Transaction[]> = {};
       transactions.value.forEach((tx) => {
-        const dateKey = tx.date.split('T')[0];
+        const dateKey = tx.date.split("T")[0];
         if (!grouped[dateKey]) grouped[dateKey] = [];
         grouped[dateKey].push(tx);
       });
 
-      transactionGroups.value = Object.entries(grouped).map(
-        ([date, transactions]) => ({
-          date,
-          transactions,
-          totalAmount: transactions.reduce(
-            (sum, tx) =>
-              sum +
-              (tx.currency === 'USD'
-                ? Number(tx.amount)
-                : Number(tx.amount) / 4000),
-            0
-          ),
-          totalAmountKhr: transactions.reduce(
-            (sum, tx) =>
-              sum +
-              (tx.currency === 'KHR'
-                ? Number(tx.amount)
-                : Number(tx.amount) * 4000),
-            0
-          ),
-        })
-      );
+      transactionGroups.value = Object.entries(grouped).map(([date, transactions]) => ({
+        date,
+        transactions,
+        totalAmount: transactions.reduce(
+          (sum, tx) =>
+            sum + (tx.currency === "USD" ? Number(tx.amount) : Number(tx.amount) / 4000),
+          0
+        ),
+        totalAmountKhr: transactions.reduce(
+          (sum, tx) =>
+            sum + (tx.currency === "KHR" ? Number(tx.amount) : Number(tx.amount) * 4000),
+          0
+        ),
+      }));
     } catch (error) {
-      console.error('Error fetching transactions:', error);
+      console.error("Error fetching transactions:", error);
     } finally {
-      setLoading("get", false)
+      setLoading("get", false);
       filteredTransactionGroups.value = transactionGroups.value;
     }
   };
@@ -240,7 +247,7 @@ export default function useTransaction() {
       const transactionRef = doc($db, "transactions", id);
       await deleteDoc(transactionRef);
       notify("Transaction deleted successfully.", "success");
-      await getTranscation();
+      await getTransaction();
     } catch (error) {
       console.error("Error deleting transaction:", error);
       notify(
@@ -297,7 +304,7 @@ export default function useTransaction() {
     model,
     addTranscation,
     transactions,
-    getTranscation,
+    getTransaction,
     isLoading,
     categories,
     getCategory,

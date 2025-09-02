@@ -76,7 +76,7 @@ import RemoveIcon from "@/assets/icons/cancel.png"
 const { convertDate, converTimeOnly } = commonHelper;
 const {
     transactions,
-    getTranscation,
+    getTransaction,
     isLoading,
     goToTransaction,
     transactionGroups,
@@ -91,7 +91,7 @@ const {
 } = useTransaction();
 
 onMounted(() => {
-    getTranscation();
+    getTransaction();
     onSearch();
 })
 </script>

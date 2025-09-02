@@ -2,7 +2,7 @@ import datetimeHelper from "~/helpers/datetimeHelper";
 import type { IBarChart } from "~/models/chart";
 
 export default function useChart() {
-    const { getTranscation, transactions, transactionGroups, isLoading } = useTransaction();
+    const { getTransaction, transactions, transactionGroups, isLoading } = useTransaction();
     const { getMonthAndDate } = datetimeHelper;
     const past7Days = new Date();
     past7Days.setDate(past7Days.getDate() - 6);
@@ -53,7 +53,7 @@ export default function useChart() {
     return {
         chartBarProperties,
         chartBarMapping,
-        getTranscation,
+        getTransaction,
         transactions,
         isLoading,
         startDate,
