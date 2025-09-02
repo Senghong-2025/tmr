@@ -32,7 +32,7 @@ import type { ITransaction } from '~/models/transaction';
 
 const isShowModal = ref(false);
 const route = useRoute();
-const { categories, getCategory, updateTransaction, isLoading, model, transactions, getTranscation, deleteTransaction, transactionGroups } = useTransaction();
+const { categories, getCategory, updateTransaction, isLoading, model, getTranscation, deleteTransaction, allTransactions } = useTransaction();
 const { currencies, getCurrency } = useCurrency();
 const id = route.params.id as string;
 
@@ -43,7 +43,7 @@ const handleDelete = () => {
 
 onBeforeMount(async () => {
     await getTranscation();
-    const transaction = transactions.value.find((transaction: ITransaction) => transaction.id === id);
+    const transaction = allTransactions.value.find((transaction: ITransaction) => transaction.id === id);
     if (transaction) {
         Object.assign(model, transaction);
     }

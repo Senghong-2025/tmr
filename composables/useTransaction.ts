@@ -177,8 +177,14 @@ export default function useTransaction() {
     }
     const response = await getDocs(q);
     lastVisible.value = response.docs[response.docs.length - 1];
-    const newTransactions = response.docs;
-    allTransactions.value.push(...newTransactions);
+    const newTransactions = response.docs.map((doc) => {
+      const data = doc.data() as Omit<ITransaction, "id">;
+      return {
+        id: doc.id,
+        ...data,
+      };
+    });
+    allTransactions.value.push(...Array.from(new Set(newTransactions)));
     if (newTransactions.length < 25) {
       isFinnal.value = true;
     }
@@ -188,15 +194,8 @@ export default function useTransaction() {
     setLoading("get", true);
     try {
       await fetchTransactions();
-      const result = allTransactions.value
-        .map((doc) => {
-          const data = doc.data() as Omit<ITransaction, "id">;
-          return {
-            id: doc.id,
-            ...data,
-          };
-        });
-      transactions.value = result.map((item) => new Transaction(item));
+
+      transactions.value = allTransactions.value.map((item) => new Transaction(item));
       const grouped: Record<string, Transaction[]> = {};
 
       transactions.value.forEach((tx) => {
@@ -316,5 +315,6 @@ export default function useTransaction() {
     handleScroll,
     transactionRef,
     isFinnal,
+    allTransactions,
   };
 }
