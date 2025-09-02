@@ -1,4 +1,4 @@
-import { addDoc, collection, deleteDoc, doc, getCountFromServer, getDocs, limit, orderBy, query, startAfter, updateDoc, where } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getCountFromServer, getDoc, getDocs, limit, orderBy, query, startAfter, updateDoc, where } from "firebase/firestore";
 import type { TInputMode, TInputType } from "~/models/form";
 import { Transaction, type ICreateTransaction, type ITransaction, type ITransactionGroupDisplay } from "~/models/transaction";
 import { notify } from "~/composables/useNotification";
@@ -91,6 +91,16 @@ export default function useTransaction() {
   function goToTransaction(id: string) {
     navigateTo(`/transaction/${id}`);
   }
+
+  const getTransactionById = async (id: string) => {
+    try {
+      const docRef = doc($db, "transactions", id);
+      const docSnap = await getDoc(docRef);
+      return docSnap.data() as Transaction;
+    } catch (error) {
+      console.error("Get error with: ", error);
+    }
+  };
 
   const updateTransaction = async (id: string) => {
     setLoading("update", true);
@@ -318,5 +328,6 @@ export default function useTransaction() {
     transactionRef,
     isFinnal,
     allTransactions,
+    getTransactionById,
   };
 }

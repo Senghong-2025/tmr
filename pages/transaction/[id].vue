@@ -1,7 +1,7 @@
 <template>
     <div class="p-4">
         <BodyHeader route="/transaction" title="Update Transaction" button-name="Back" is-button class="mb-2" />
-        <div class="flex justify-center items-center">
+        <div class="flex justify-center items-center" :class="{'pointer-events-none opacity-50': isGetting}">
             <div :class="['bg-gray-600/20 w-[400px] md:w-[600px] rounded-lg shadow-sm', { 'bg-blue-200': isLoading('get') }]">
                 <div class="p-4 flex-col flex gap-4">
                     <input-field required label="Title" mode="text" v-model="model.title" type="text" />
@@ -32,7 +32,7 @@ import type { ITransaction } from '~/models/transaction';
 
 const isShowModal = ref(false);
 const route = useRoute();
-const { categories, getCategory, updateTransaction, isLoading, model, getTransaction, deleteTransaction, allTransactions } = useTransaction();
+const { categories, getCategory, updateTransaction, isLoading, model, getTransaction, deleteTransaction, allTransactions, getTransactionById } = useTransaction();
 const { currencies, getCurrency } = useCurrency();
 const id = route.params.id as string;
 
@@ -41,13 +41,15 @@ const handleDelete = () => {
     deleteTransaction(id);
 };
 
+const isGetting = ref(false);
 onBeforeMount(async () => {
-    await getTransaction();
-    const transaction = allTransactions.value.find((transaction: ITransaction) => transaction.id === id);
-    if (transaction) {
-        Object.assign(model, transaction);
-    }
-    await getCategory();
-    await getCurrency();
+    isGetting.value = true;
+    const [ data ] = await Promise.all([
+    getTransactionById(id),
+    getCategory(),
+    getCurrency(),
+    ])
+    isGetting.value = false;
+    Object.assign(model, data);
 });
 </script>
