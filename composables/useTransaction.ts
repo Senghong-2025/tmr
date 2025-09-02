@@ -154,15 +154,11 @@ export default function useTransaction() {
       return;
     }
 
-    const twoWeeksAgo = new Date();
-    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - pastDays.value);
-
     let q;
     if (lastVisible.value) {
       q = query(
         collection($db, "transactions"),
         where("userId", "==", userId),
-        where("date", ">=", twoWeeksAgo.toISOString()),
         orderBy("date", "desc"),
         startAfter(lastVisible.value),
         limit(25)
@@ -171,7 +167,6 @@ export default function useTransaction() {
       q = query(
         collection($db, "transactions"),
         where("userId", "==", userId),
-        where("date", ">=", twoWeeksAgo.toISOString()),
         orderBy("date", "desc"),
         limit(25)
       );
