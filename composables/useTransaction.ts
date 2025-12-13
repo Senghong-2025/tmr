@@ -228,13 +228,17 @@ export default function useTransaction() {
         date,
         transactions,
         totalAmount: transactions.reduce(
-          (sum, tx) =>
-            sum + (tx.currency === "USD" ? Number(tx.amount) : Number(tx.amount) / 4000),
+          (sum, tx) => {
+            const amount = tx.currency === "USD" ? Number(tx.amount) : Number(tx.amount) / 4000;
+            return tx.type === "Outcome" ? sum - amount : sum + amount;
+          },
           0
         ),
         totalAmountKhr: transactions.reduce(
-          (sum, tx) =>
-            sum + (tx.currency === "KHR" ? Number(tx.amount) : Number(tx.amount) * 4000),
+          (sum, tx) => {
+            const amount = tx.currency === "KHR" ? Number(tx.amount) : Number(tx.amount) * 4000;
+            return tx.type === "Outcome" ? sum - amount : sum + amount;
+          },
           0
         ),
       }));

@@ -28,34 +28,37 @@ const chartData = computed<ChartData<ChartType>>(() => ({
   labels: [...props.property.label],
   datasets: [
     {
-      label: 'Expense',
-      backgroundColor: '#ffd733',
-      data: [...props.property.data],
-      hoverBackgroundColor: '#ecff33'
+      label: 'Balance',
+      backgroundColor: props.property.data.map(value => value >= 0 ? '#10b981' : '#ef4444'),
+      data: props.property.data.map(value => Math.abs(value)),
+      hoverBackgroundColor: props.property.data.map(value => value >= 0 ? '#34d399' : '#f87171'),
+      borderRadius: 6,
+      borderSkipped: false,
     }
   ]
 }))
 
 // Chart options with proper typing
-const chartOptions: ChartOptions<ChartType> = {
+const chartOptions = computed<ChartOptions<ChartType>>(() => ({
   responsive: true,
   plugins: {
     legend: {
-      position: 'top',
+      position: 'top' as const,
       labels: {
         color: '#ffffff'
       }
     },
     title: {
       display: true,
-      text: 'Past 7 Days Expenses',
+      text: 'Past 7 Days Balance',
       color: '#ffffff'
     },
     tooltip: {
       callbacks: {
         label: function (context) {
-          const value = context.parsed.y;
-          return `${value} $`;
+          const originalValue = props.property.data[context.dataIndex];
+          const sign = originalValue >= 0 ? '+' : '';
+          return `${sign}${originalValue.toFixed(2)} $`;
         }
       }
     }
@@ -66,18 +69,19 @@ const chartOptions: ChartOptions<ChartType> = {
         color: '#FFFFFF'
       },
       grid: {
-        color: 'rgba(255, 255, 255, 0.1)' 
+        color: 'rgba(255, 255, 255, 0.1)'
       }
     },
     y: {
+      beginAtZero: true,
       ticks: {
         color: '#FFFFFF',
-        callback: (value) => value + " $",
+        callback: (value) => `${value} $`,
       },
       grid: {
-        color: 'rgba(255, 255, 255, 0.1)' 
+        color: 'rgba(255, 255, 255, 0.1)',
       }
     }
   }
-}
+}))
 </script>
