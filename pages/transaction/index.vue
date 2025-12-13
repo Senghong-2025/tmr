@@ -9,7 +9,7 @@
                 </div>
             </div>
         </div>
-        <div v-else @scroll="handleScroll" class="h-[calc(100vh-250px)] overflow-y-auto transaction-list" ref="transactionRef">
+        <div v-else @scroll="handleScroll" class="h-[calc(100dvh-180px)] overflow-y-auto transaction-list" ref="transactionRef">
             <!-- <div class="flex gap-2 items-center py-2">
                 <div>
                     Search
