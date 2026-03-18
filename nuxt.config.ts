@@ -4,8 +4,13 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-05-15",
   css: ["~/assets/main.css"],
   devtools: { enabled: true },
-  modules: ["@primevue/nuxt-module"],
+  modules: ["@primevue/nuxt-module", "@nuxtjs/color-mode"],
   plugins: ["~/plugins/firebase.ts"],
+  colorMode: {
+    classSuffix: "",
+    preference: "light",
+    fallback: "light",
+  },
   runtimeConfig: {
     public: {
       firebaseApiKey: process.env.FIREBASE_API_KEY,

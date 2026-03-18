@@ -4,9 +4,14 @@
   --color-app-bg: #f5f7fb;
   --color-app-surface: #ffffff;
   --color-app-surface-muted: #eef2f7;
+  --color-app-navbar: rgba(255, 255, 255, 0.9);
   --color-app-border: #d9e2ec;
   --color-app-text: #102033;
   --color-app-subtle: #5f7288;
+  --color-app-nav: #475569;
+  --color-app-hover: #e2e8f0;
+  --color-app-accent: #1d4ed8;
+  --color-app-accent-soft: #dbeafe;
 }
 
 html {
@@ -17,6 +22,57 @@ body {
   font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
   font-weight: 400;
   color: var(--color-app-text);
+  background: var(--color-app-bg);
+}
+
+html.dark {
+  --color-app-bg: #0f172a;
+  --color-app-surface: #111827;
+  --color-app-surface-muted: #172033;
+  --color-app-navbar: rgba(15, 23, 42, 0.88);
+  --color-app-border: #334155;
+  --color-app-text: #e5eefb;
+  --color-app-subtle: #94a3b8;
+  --color-app-nav: #cbd5e1;
+  --color-app-hover: #1e293b;
+  --color-app-accent: #93c5fd;
+  --color-app-accent-soft: rgba(59, 130, 246, 0.18);
+}
+
+.text-app-text {
+  color: var(--color-app-text);
+}
+
+.text-app-subtle {
+  color: var(--color-app-subtle);
+}
+
+.text-app-nav {
+  color: var(--color-app-nav);
+}
+
+.text-app-accent {
+  color: var(--color-app-accent);
+}
+
+.bg-app-navbar {
+  background-color: var(--color-app-navbar);
+}
+
+.bg-app-surface {
+  background-color: var(--color-app-surface);
+}
+
+.bg-app-hover {
+  background-color: var(--color-app-hover);
+}
+
+.bg-app-accent-soft {
+  background-color: var(--color-app-accent-soft);
+}
+
+.border-app-border {
+  border-color: var(--color-app-border);
 }
 @property --navbar-height {
   syntax: "<length>";
@@ -50,6 +106,12 @@ textarea {
     linear-gradient(180deg, #fbfcfe 0%, #f5f7fb 100%);
 }
 
+html.dark .app-shell {
+  background:
+    radial-gradient(circle at top left, rgba(56, 189, 248, 0.14), transparent 22%),
+    linear-gradient(180deg, #0f172a 0%, #020617 100%);
+}
+
 .page-shell {
   width: 100%;
   max-width: 1100px;
@@ -70,6 +132,17 @@ textarea {
   border-radius: 1rem;
 }
 
+html.dark .surface-card {
+  background: rgba(17, 24, 39, 0.9);
+  border-color: rgba(51, 65, 85, 0.95);
+  box-shadow: 0 18px 44px rgba(2, 6, 23, 0.4);
+}
+
+html.dark .surface-card-muted {
+  background: rgba(23, 32, 51, 0.85);
+  border-color: rgba(51, 65, 85, 0.9);
+}
+
 .section-title {
   font-size: 0.75rem;
   line-height: 1rem;
@@ -83,6 +156,90 @@ textarea {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1rem;
+}
+
+html.dark option {
+  background-color: #0f172a;
+}
+
+html.dark .bg-white,
+html.dark .bg-white\/90,
+html.dark .bg-white\/94 {
+  background-color: #111827 !important;
+}
+
+html.dark .bg-slate-50 {
+  background-color: #0f172a !important;
+}
+
+html.dark .bg-slate-100 {
+  background-color: #1e293b !important;
+}
+
+html.dark .bg-slate-200,
+html.dark .bg-slate-300 {
+  background-color: #334155 !important;
+}
+
+html.dark .bg-slate-900 {
+  background-color: #e2e8f0 !important;
+}
+
+html.dark .text-slate-900,
+html.dark .text-slate-800,
+html.dark .text-slate-700 {
+  color: #e5eefb !important;
+}
+
+html.dark .text-slate-600,
+html.dark .text-slate-500,
+html.dark .text-slate-400 {
+  color: #94a3b8 !important;
+}
+
+html.dark .text-white {
+  color: #0f172a !important;
+}
+
+html.dark .border-slate-200,
+html.dark .border-slate-200\/80,
+html.dark .border-slate-300 {
+  border-color: #334155 !important;
+}
+
+html.dark .bg-blue-50 {
+  background-color: rgba(59, 130, 246, 0.16) !important;
+}
+
+html.dark .bg-blue-100 {
+  background-color: rgba(59, 130, 246, 0.22) !important;
+}
+
+html.dark .text-blue-700,
+html.dark .text-blue-600 {
+  color: #93c5fd !important;
+}
+
+html.dark .border-blue-100,
+html.dark .border-blue-200 {
+  border-color: rgba(96, 165, 250, 0.28) !important;
+}
+
+html.dark .hover\:bg-slate-50:hover,
+html.dark .hover\:bg-slate-100:hover {
+  background-color: #1e293b !important;
+}
+
+html.dark .hover\:text-slate-900:hover {
+  color: #f8fafc !important;
+}
+
+html.dark .hover\:border-slate-300:hover {
+  border-color: #475569 !important;
+}
+
+html.dark .placeholder\:text-slate-400::placeholder {
+  color: #64748b !important;
 }
 
 @media (min-width: 640px) {
