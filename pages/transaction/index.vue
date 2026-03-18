@@ -57,6 +57,7 @@
                         <!-- Amount -->
                         <div class="text-right shrink-0">
                             <span class="text-sm font-bold"
+                                :style="blurStyle"
                                 :class="transaction.type === 'Outcome' ? 'text-red-600' : 'text-emerald-600'">
                                 {{ transaction.amountForDisplay }}
                             </span>
@@ -70,10 +71,10 @@
                     <div class="flex justify-between items-center">
                         <span class="text-xs font-medium uppercase tracking-wider text-slate-500">Daily total</span>
                         <div class="text-right">
-                            <p class="text-sm font-bold" :class="group.totalAmount >= 0 ? 'text-emerald-600' : 'text-red-600'">
+                            <p class="text-sm font-bold" :style="blurStyle" :class="group.totalAmount >= 0 ? 'text-emerald-600' : 'text-red-600'">
                                 {{ group.totalAmount >= 0 ? '+' : '' }}{{ group.totalAmount.toFixed(2) }} USD
                             </p>
-                            <p v-if="group.totalAmountKhr" class="mt-0.5 text-xs text-slate-500">
+                            <p v-if="group.totalAmountKhr" class="mt-0.5 text-xs text-slate-500" :style="blurStyle">
                                 {{ group.totalAmountKhr.toLocaleString() }} KHR
                             </p>
                         </div>
@@ -94,8 +95,10 @@
 import BodyHeader from '~/components/BodyHeader.vue';
 import { ArrowRightIcon } from '@heroicons/vue/24/solid';
 import commonHelper from '~/helpers/datetimeHelper';
+import usePrivacy from '~/composables/usePrivacy';
 
 const { convertDate, converTimeOnly } = commonHelper;
+const { blurStyle, loadSettings } = usePrivacy();
 const {
     transactions,
     getTransaction,
@@ -108,6 +111,7 @@ const {
 } = useTransaction();
 
 onMounted(() => {
+    loadSettings();
     getTransaction();
 })
 </script>

@@ -1,11 +1,10 @@
 <template>
   <div class="surface-card p-4 sm:p-6">
-    <Bar :data="chartData" :options="chartOptions" :height="320" />
+    <Bar :data="chartData" :options="chartOptions" :height="240" />
   </div>
 </template>
 
 <script lang="ts" setup>
-
 const props = defineProps<{
   property: IBarChart,
 }>();
