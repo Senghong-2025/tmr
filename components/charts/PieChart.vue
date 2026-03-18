@@ -2,7 +2,7 @@
   <div class="surface-card p-4 sm:p-6">
     <div class="mb-4">
       <h2 class="text-lg font-semibold text-slate-900">Spending by category</h2>
-      <p class="mt-1 text-sm text-slate-500">Outcome transactions for the selected 7-day range.</p>
+      <p class="mt-1 text-sm text-slate-500">{{ props.property.description || 'Outcome transactions for the selected range.' }}</p>
     </div>
 
     <div v-if="hasData" class="grid gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(200px,0.9fr)] lg:items-center">

@@ -51,7 +51,7 @@ const chartOptions = computed<ChartOptions<ChartType>>(() => ({
     },
     title: {
       display: true,
-      text: 'Past 7 Days Balance',
+      text: props.property.title || 'Balance',
       color: '#0f172a'
     },
     tooltip: {

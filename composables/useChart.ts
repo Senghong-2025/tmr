@@ -1,9 +1,12 @@
+import { eachDayOfInterval, endOfDay, endOfMonth, endOfWeek, startOfDay, startOfMonth, startOfWeek, subDays, subMonths, subWeeks } from "date-fns";
 import datetimeHelper from "~/helpers/datetimeHelper";
 import type { IBarChart, IPieChart } from "~/models/chart";
 
 export default function useChart() {
     const { getTransaction, transactions, transactionGroups, isLoading } = useTransaction();
     const { getMonthAndDate } = datetimeHelper;
+    type TRangePreset = "thisWeek" | "lastWeek" | "last7Days" | "thisMonth" | "lastMonth";
+
     const toLocalDateInputValue = (date: Date) => {
         const year = date.getFullYear();
         const month = `${date.getMonth() + 1}`.padStart(2, '0');
@@ -11,37 +14,62 @@ export default function useChart() {
         return `${year}-${month}-${day}`;
     };
     const parseLocalDateInput = (value: string) => new Date(`${value}T00:00:00`);
-    const getToday = () => {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        return today;
-    };
-    const getLatestStartDate = () => {
-        const latest = getToday();
-        latest.setDate(latest.getDate() - 6);
-        return latest;
-    };
-    const latestStartDate = computed(() => toLocalDateInputValue(getLatestStartDate()));
-    const startDate = ref<string>(latestStartDate.value);
+    const weekOptions = { weekStartsOn: 1 as const };
+    const getToday = () => startOfDay(new Date());
+    const selectedPreset = ref<TRangePreset>("thisWeek");
+    const rangePresets: { id: TRangePreset; label: string; }[] = [
+        { id: "thisWeek", label: "This week" },
+        { id: "lastWeek", label: "Last week" },
+        { id: "last7Days", label: "Last 7 days" },
+        { id: "thisMonth", label: "This month" },
+        { id: "lastMonth", label: "Last month" },
+    ];
 
     const chartBarProperties = ref<IBarChart>({
         label: [],
         data: [],
+        title: "Balance",
     });
     const chartPieProperties = ref<IPieChart>({
         label: [],
         data: [],
+        description: "",
     });
 
-    const getDateRange = () => {
-        const start = parseLocalDateInput(startDate.value);
-        start.setHours(0, 0, 0, 0);
+    const getDateRange = (preset = selectedPreset.value) => {
+        const today = getToday();
 
-        const end = new Date(start);
-        end.setDate(start.getDate() + 6);
-        end.setHours(23, 59, 59, 999);
-
-        return { start, end };
+        switch (preset) {
+            case "thisWeek":
+                return {
+                    start: startOfWeek(today, weekOptions),
+                    end: endOfDay(today),
+                };
+            case "lastWeek": {
+                const lastWeek = subWeeks(today, 1);
+                return {
+                    start: startOfWeek(lastWeek, weekOptions),
+                    end: endOfWeek(lastWeek, weekOptions),
+                };
+            }
+            case "last7Days":
+                return {
+                    start: startOfDay(subDays(today, 6)),
+                    end: endOfDay(today),
+                };
+            case "thisMonth":
+                return {
+                    start: startOfMonth(today),
+                    end: endOfDay(today),
+                };
+            case "lastMonth": {
+                const lastMonth = subMonths(today, 1);
+                return {
+                    start: startOfMonth(lastMonth),
+                    end: endOfMonth(lastMonth),
+                };
+            }
+        }
     };
 
     const selectedRangeLabel = computed(() => {
@@ -49,11 +77,11 @@ export default function useChart() {
         return `${getMonthAndDate(start)} - ${getMonthAndDate(end)}`;
     });
 
-    const canShiftForward = computed(() => startDate.value < latestStartDate.value);
+    const selectedPresetLabel = computed(() => rangePresets.find((preset) => preset.id === selectedPreset.value)?.label ?? "");
 
     const chartBarMapping = () => {
         const { start, end } = getDateRange();
-
+        const daysInRange = eachDayOfInterval({ start, end });
         const grouped: Record<string, number> = {};
 
         transactionGroups.value.forEach((tx) => {
@@ -68,11 +96,9 @@ export default function useChart() {
 
         chartBarProperties.value.label = [];
         chartBarProperties.value.data = [];
+        chartBarProperties.value.title = `${selectedPresetLabel.value} balance`;
 
-        for (let i = 0; i < 7; i++) {
-            const day = new Date(start);
-            day.setDate(start.getDate() + i);
-
+        for (const day of daysInRange) {
             const key = toLocalDateInputValue(day);
             const label = getMonthAndDate(day);
 
@@ -96,30 +122,13 @@ export default function useChart() {
         const sortedEntries = Object.entries(grouped).sort(([, left], [, right]) => right - left);
         chartPieProperties.value.label = sortedEntries.map(([label]) => label);
         chartPieProperties.value.data = sortedEntries.map(([, amount]) => Number(amount.toFixed(2)));
+        chartPieProperties.value.description = `Outcome transactions for ${selectedPresetLabel.value.toLowerCase()}.`;
     };
 
-    const onChangeDate = () => {
+    const applyPreset = (preset: TRangePreset) => {
+        selectedPreset.value = preset;
         chartBarMapping();
         chartPieMapping();
-    };
-
-    const setLast7Days = () => {
-        startDate.value = latestStartDate.value;
-        onChangeDate();
-    };
-
-    const shiftRange = (days: number) => {
-        const current = parseLocalDateInput(startDate.value);
-        current.setHours(0, 0, 0, 0);
-        current.setDate(current.getDate() + days);
-
-        const latest = getLatestStartDate();
-        if (current > latest) {
-            startDate.value = toLocalDateInputValue(latest);
-        } else {
-            startDate.value = toLocalDateInputValue(current);
-        }
-        onChangeDate();
     };
 
     return {
@@ -127,15 +136,13 @@ export default function useChart() {
         chartPieProperties,
         chartBarMapping,
         chartPieMapping,
-        canShiftForward,
         getTransaction,
         transactions,
         isLoading,
-        latestStartDate,
-        onChangeDate,
+        applyPreset,
+        rangePresets,
+        selectedPreset,
+        selectedPresetLabel,
         selectedRangeLabel,
-        setLast7Days,
-        shiftRange,
-        startDate,
     }
 };

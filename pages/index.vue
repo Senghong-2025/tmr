@@ -15,33 +15,16 @@
                     <div class="surface-card-muted space-y-4 p-4">
                         <div class="flex flex-wrap gap-2">
                             <button
+                                v-for="preset in rangePresets"
+                                :key="preset.id"
                                 type="button"
-                                class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-blue-200 hover:text-blue-700"
-                                @click="shiftRange(-7)">
-                                Previous 7 days
+                                class="rounded-full border px-4 py-2 text-sm font-medium transition"
+                                :class="selectedPreset === preset.id
+                                    ? 'border-slate-900 bg-slate-900 text-white hover:bg-slate-800'
+                                    : 'border-slate-200 bg-white text-slate-700 hover:border-blue-200 hover:text-blue-700'"
+                                @click="applyPreset(preset.id)">
+                                {{ preset.label }}
                             </button>
-                            <button
-                                type="button"
-                                class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-blue-200 hover:text-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-                                :disabled="!canShiftForward"
-                                @click="shiftRange(7)">
-                                Next 7 days
-                            </button>
-                            <button
-                                type="button"
-                                class="rounded-full bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
-                                @click="setLast7Days">
-                                Last 7 days
-                            </button>
-                        </div>
-
-                        <div class="w-full sm:max-w-xs">
-                            <InputField
-                                type="date"
-                                @change="onChangeDate"
-                                v-model="startDate"
-                                label="Custom start date"
-                                :max-date="latestStartDate" />
                         </div>
                     </div>
                 </div>
@@ -65,22 +48,18 @@
 <script lang="ts" setup>
 import BarChart from '@/components/charts/BarChart.vue';
 import PieChart from '@/components/charts/PieChart.vue';
-import InputField from '@/components/formfields/InputField.vue';
 
 const {
-    canShiftForward,
+    applyPreset,
     chartBarProperties,
     chartPieProperties,
     getTransaction,
     chartBarMapping,
     chartPieMapping,
     isLoading,
-    latestStartDate,
-    onChangeDate,
+    rangePresets,
+    selectedPreset,
     selectedRangeLabel,
-    setLast7Days,
-    shiftRange,
-    startDate
 } = useChart();
 onMounted(async () => {
     await getTransaction();
