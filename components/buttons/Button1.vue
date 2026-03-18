@@ -1,11 +1,12 @@
 <template>
     <button
+        :type="nativeType ?? 'button'"
         :disabled="loading || disabled"
         @click="$emit('click')"
         :class="[
             { 'w-full': !isBlocked },
             colorClass,
-            'relative flex items-center justify-center px-5 py-2.5 cursor-pointer rounded-xl font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 active:scale-[0.98]'
+            'relative inline-flex min-h-11 items-center justify-center rounded-xl px-5 py-2.5 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50'
         ]"
     >
         <span v-if="!loading">
@@ -29,20 +30,21 @@ const props = defineProps<{
     disabled?: boolean
     isBlocked?: boolean
     type?: 'primary' | 'secondary' | 'danger' | 'info'
+    nativeType?: 'button' | 'submit'
 }>()
 
 const colorClass = computed(() => {
     switch (props.type) {
         case 'secondary':
-            return 'bg-gray-600/50 hover:bg-gray-600 text-gray-200 border border-gray-500/30'
+            return 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
         case 'danger':
-            return 'bg-red-500 hover:bg-red-600 text-white'
+            return 'bg-red-600 text-white hover:bg-red-700'
         case 'primary':
-            return 'bg-blue-500 hover:bg-blue-600 text-white'
+            return 'bg-blue-600 text-white hover:bg-blue-700'
         case 'info':
-            return 'bg-gray-700/50 hover:bg-gray-700 text-gray-300 border border-gray-600/30'
+            return 'border border-blue-100 bg-blue-50 text-blue-700 hover:bg-blue-100'
         default:
-            return 'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30'
+            return 'bg-slate-900 text-white hover:bg-slate-800'
     }
 })
 

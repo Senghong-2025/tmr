@@ -1,7 +1,7 @@
 <template>
     <div class="w-full relative">
-        <label v-if="label" class="block mb-1 text-sm font-medium text-gray-300">
-            <span v-if="required" class="text-red-500 ml-1">*</span>
+        <label v-if="label" class="mb-2 block text-sm font-medium text-slate-700">
+            <span v-if="required" class="mr-1 text-red-500">*</span>
             {{ label }}
         </label>
 
@@ -9,11 +9,11 @@
             'relative w-full',
             disabled ? 'opacity-50 cursor-not-allowed' : '',
         ]">
-            <input :type="type" v-model="model" :placeholder="placeholder" :disabled="disabled" @change="emit('change')" @keydown="emit('keydown')" :max="maxDate ?? ''"
-                class="w-full px-4 py-2 text-sm rounded-sm bg-black/10 shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all " :inputmode="mode || 'text'"/>
+            <input :type="type" v-model="model" :placeholder="placeholder" :disabled="disabled" @change="emit('change')" @keydown="emit('keydown')" :max="maxDate ?? ''" :min="minDate ?? ''"
+                class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100" :inputmode="mode || 'text'"/>
         </div>
 
-        <p v-if="error" class="mt-1 text-sm text-red-500">{{ error }}</p>
+        <p v-if="error" class="mt-1 text-sm text-red-600">{{ error }}</p>
         <slot/>
     </div>
 </template>

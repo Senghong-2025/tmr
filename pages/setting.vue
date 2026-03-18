@@ -1,6 +1,6 @@
 <template>
-    <div class="p-4 overflow-hidden">
-        <BodyHeader title="Setting" class="mb-4" />
+    <div class="page-shell overflow-hidden">
+        <BodyHeader title="Settings" class="mb-6" />
 
         <!-- Tab Navigation -->
         <div class="mb-6">
@@ -9,17 +9,17 @@
                     v-for="route in settingRoutes"
                     :to="route.path"
                     :key="route.name"
-                    class="px-5 py-2.5 rounded-xl font-medium text-sm whitespace-nowrap transition-all duration-200"
+                    class="whitespace-nowrap rounded-full px-4 py-2.5 text-sm font-medium transition"
                     :class="isActived(route)
-                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                        : 'bg-gray-800/30 text-gray-400 border border-gray-700/30 hover:bg-gray-700/30 hover:text-gray-200'">
+                        ? 'bg-blue-600 text-white'
+                        : 'border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900'">
                     {{ route.name }}
                 </NuxtLink>
             </div>
         </div>
 
         <!-- Page Content -->
-        <div class="bg-gray-800/20 backdrop-blur-sm rounded-2xl border border-gray-700/30 p-4">
+        <div class="surface-card p-4 sm:p-6">
             <NuxtPage />
         </div>
     </div>
@@ -27,7 +27,10 @@
 <script lang="ts" setup>
 import BodyHeader from '~/components/BodyHeader.vue';
 const { settingRoutes, isActived } = useNavbar();
+const route = useRoute();
 onMounted(() => {
-    navigateTo('/setting/profile');
+    if (route.path === '/setting') {
+        navigateTo('/setting/profile');
+    }
 });
 </script>

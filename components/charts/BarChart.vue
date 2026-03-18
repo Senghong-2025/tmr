@@ -1,5 +1,7 @@
 <template>
-  <Bar :data="chartData" :options="chartOptions" :height="400" :width="400" />
+  <div class="surface-card p-4 sm:p-6">
+    <Bar :data="chartData" :options="chartOptions" :height="320" />
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -45,13 +47,13 @@ const chartOptions = computed<ChartOptions<ChartType>>(() => ({
     legend: {
       position: 'top' as const,
       labels: {
-        color: '#ffffff'
+        color: '#475569'
       }
     },
     title: {
       display: true,
       text: 'Past 7 Days Balance',
-      color: '#ffffff'
+      color: '#0f172a'
     },
     tooltip: {
       callbacks: {
@@ -66,20 +68,20 @@ const chartOptions = computed<ChartOptions<ChartType>>(() => ({
   scales: {
     x: {
       ticks: {
-        color: '#FFFFFF'
+        color: '#64748b'
       },
       grid: {
-        color: 'rgba(255, 255, 255, 0.1)'
+        color: 'rgba(148, 163, 184, 0.2)'
       }
     },
     y: {
       beginAtZero: true,
       ticks: {
-        color: '#FFFFFF',
+        color: '#64748b',
         callback: (value) => `${value} $`,
       },
       grid: {
-        color: 'rgba(255, 255, 255, 0.1)',
+        color: 'rgba(148, 163, 184, 0.2)',
       }
     }
   }

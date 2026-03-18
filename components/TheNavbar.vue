@@ -1,12 +1,15 @@
 <template>
-    <header class="header bg-gray-600/10 text-white height-navbar flex items-center shadow-xl">
-        <div v-if="isAuth" class="container mx-auto flex items-center justify-between px-4">
-            <h1 class="text-2xl font-bold" @click="$router.push('/')">Hi, {{ username }}</h1>
-            <nav class="space-x-4">
+    <header class="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 backdrop-blur">
+        <div v-if="isAuth" class="mx-auto flex h-[52px] max-w-[1100px] items-center justify-between gap-4 px-4 sm:px-5">
+            <button class="truncate text-left" @click="$router.push('/')">
+                <span class="block text-xs font-medium uppercase tracking-[0.18em] text-slate-500">Expense Tracker</span>
+                <span class="block truncate text-base font-semibold text-slate-900 sm:text-lg">Hi, {{ username }}</span>
+            </button>
+            <nav class="flex items-center gap-2 overflow-x-auto">
                 <NuxtLink
                     v-for="route in mainRoutes" :to="route.path" 
-                    class="hover:underline"
-                    :class="{'text-green-500': isActivedMainRoute(route)}"
+                    class="rounded-full px-3 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+                    :class="{'bg-blue-50 text-blue-700': isActivedMainRoute(route)}"
                     >{{ route.name }}
                 </NuxtLink>
             </nav>

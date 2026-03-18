@@ -1,8 +1,12 @@
 <template>
-    <div class="register-page min-h-screen flex items-center justify-center">
-        <form @submit.prevent="register" class="bg-gray-600/20 p-8 rounded-lg shadow-xl w-full max-w-md">
-            <h2 class="text-2xl font-bold mb-6 text-center">Register</h2>
-            <div class="grid gap-2 mb-4">
+    <div class="flex min-h-screen items-center justify-center px-4 py-10">
+        <form @submit.prevent="register" class="surface-card w-full max-w-md p-8">
+            <div class="mb-6 space-y-2 text-center">
+                <p class="section-title">Create account</p>
+                <h2 class="text-3xl font-semibold text-slate-900">Register</h2>
+                <p class="text-sm text-slate-500">Set up your profile in a few steps.</p>
+            </div>
+            <div class="grid gap-4 mb-5">
                 <InputField v-model:model-value="registerModel.username" type="text" label="Username" required />
                 <InputField v-model:model-value="registerModel.phone" type="tel" label="Phone" required />
                 <InputField v-model:model-value="registerModel.email" type="email" label="Email" required />
@@ -10,9 +14,9 @@
                 <InputField v-model:model-value="registerModel.confirmPassword" type="password" label="Confirm Password"
                     required />
             </div>
-            <Button1 :loading="loading" name="Register" />
-            <div class="text-sm text-gray-500 mt-4 text-center">
-                Already have an account? <RouterLink to="/login" class="text-blue-500">Login</RouterLink>
+            <Button1 :loading="loading" name="Register" native-type="submit" />
+            <div class="mt-4 text-center text-sm text-slate-500">
+                Already have an account? <RouterLink to="/login" class="font-medium text-blue-600 hover:text-blue-700">Login</RouterLink>
             </div>
         </form>
     </div>

@@ -1,9 +1,13 @@
 <template>
-    <div class="p-4">
-        <BodyHeader route="/transaction" title="Update Transaction" button-name="Back" is-button class="mb-2" />
+    <div class="page-shell">
+        <BodyHeader route="/transaction" title="Update transaction" button-name="Back" is-button class="mb-6" />
         <div class="flex justify-center items-center" :class="{'pointer-events-none opacity-50': isGetting}">
-            <div :class="['bg-gray-600/20 w-[400px] md:w-[600px] rounded-lg shadow-sm', { 'bg-blue-200': isLoading('get') }]">
-                <div class="p-4 flex-col flex gap-4">
+            <form class="surface-card w-full max-w-2xl p-6 md:p-8" @submit.prevent="updateTransaction(id)">
+                <div class="mb-6">
+                    <p class="section-title mb-2">Transaction details</p>
+                    <p class="text-sm text-slate-500">Edit the values below or remove the transaction if it is no longer needed.</p>
+                </div>
+                <div class="flex flex-col gap-4">
                     <input-field required label="Title" mode="text" v-model="model.title" type="text" />
                     <input-field required label="Amount" mode="decimal" v-model="model.amount" type="text" />
                     <select-field required label="Currency" v-model="model.currency"
@@ -14,15 +18,15 @@
                     <select-field required label="Category" v-model="model.category"
                         :options="categories.map((v) => ({ label: v.name, value: v.name }))" />
                     <input-field required label="Note" v-model="model.note" type="text" />
-                    <div class="flex justify-end mt-4 gap-2">
-                        <Button1 @click="updateTransaction(id)" name="Update" :loading="isLoading('update')" />
-                        <Button1 @click="isShowModal = true" name="Delete" :loading="isLoading('delete')" type="danger" />
+                    <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:justify-end">
+                        <Button1 name="Save changes" :loading="isLoading('update')" native-type="submit" />
+                        <Button1 @click="isShowModal = true" name="Delete" :loading="isLoading('delete')" type="danger" native-type="button" />
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
-    <ModalsDeleteModal :isShowModal="isShowModal" :isLoading="isLoading('get')" @delete="handleDelete()" @close="isShowModal = false" />
+    <ModalsDeleteModal :isShowModal="isShowModal" :isLoading="isLoading('delete')" @delete="handleDelete()" @close="isShowModal = false" />
 </template>
 <script lang="ts" setup>
 import InputField from '~/components/formfields/InputField.vue';

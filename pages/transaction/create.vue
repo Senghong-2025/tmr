@@ -1,9 +1,13 @@
 <template>
-    <div class="p-4">
-        <BodyHeader title="Create Transaction" route="/transaction" buttonName="Back" :is-button="true" class="mb-4" />
+    <div class="page-shell">
+        <BodyHeader title="Create transaction" route="/transaction" button-name="Back" :is-button="true" class="mb-6" />
         <div class="flex justify-center w-full">
-            <form class="md:w-[1000px] w-full bg-gray-800/30 backdrop-blur-sm border border-gray-700/30 p-6 md:px-10 rounded-2xl">
-                <div class="grid gap-4 mb-6">
+            <form class="surface-card w-full max-w-4xl p-6 md:px-10" @submit.prevent="addTranscation">
+                <div class="mb-6">
+                    <p class="section-title mb-2">New entry</p>
+                    <p class="text-sm text-slate-500">Keep each transaction clear and complete so it is easier to review later.</p>
+                </div>
+                <div class="grid gap-4 mb-6 md:grid-cols-2">
                     <div v-for="field in formFields" :key="field.model">
                         <SelectField required v-if="field.model === 'currency'" v-model="model[field.model]"
                             :label="field.label" :options="currencies.map(v => ({ label: v.code, value: v.code }))" />
@@ -17,14 +21,7 @@
                             :mode="field.mode" />
                     </div>
                 </div>
-                <Button1 @click="addTranscation" :loading="isLoading('add')">
-                    <span class="flex items-center justify-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                        </svg>
-                        Create Transaction
-                    </span>
-                </Button1>
+                <Button1 :loading="isLoading('add')" name="Create transaction" native-type="submit" />
             </form>
         </div>
     </div>

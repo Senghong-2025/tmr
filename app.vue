@@ -1,7 +1,9 @@
 <template>
-  <div class="bg-gradient-to-br from-[#203249] to-[#19263d] text-white min-h-screen">
+  <div class="app-shell min-h-screen text-slate-900">
     <TheNavbar />
-    <div class="min-h-[calc(100vh-52px)]"><nuxt-page /></div>
+    <main class="min-h-[calc(100vh-52px)]">
+      <nuxt-page />
+    </main>
   </div>
   <Notification />
 </template>
@@ -10,6 +12,6 @@
 </script>
 <style>
 body {
-  background-color: #19263d;
+  background-color: #f5f7fb;
 }
 </style>

@@ -1,8 +1,22 @@
 @import "tailwindcss";
 
+@theme {
+  --color-app-bg: #f5f7fb;
+  --color-app-surface: #ffffff;
+  --color-app-surface-muted: #eef2f7;
+  --color-app-border: #d9e2ec;
+  --color-app-text: #102033;
+  --color-app-subtle: #5f7288;
+}
+
+html {
+  background: var(--color-app-bg);
+}
+
 body {
-  font-family: "Roboto", Arial, Helvetica, sans-serif;
+  font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
   font-weight: 400;
+  color: var(--color-app-text);
 }
 @property --navbar-height {
   syntax: "<length>";
@@ -19,7 +33,7 @@ body {
 }
 
 option {
-  background-color: #19263d;
+  background-color: #ffffff;
 }
 select,
 input,
@@ -30,6 +44,41 @@ textarea {
   font-size: 16px !important;
 }
 
+.app-shell {
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 25%),
+    linear-gradient(180deg, #fbfcfe 0%, #f5f7fb 100%);
+}
+
+.page-shell {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 2rem;
+}
+
+.surface-card {
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(217, 226, 236, 0.95);
+  border-radius: 1.25rem;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
+}
+
+.surface-card-muted {
+  background: rgba(248, 250, 252, 0.9);
+  border: 1px solid rgba(217, 226, 236, 0.9);
+  border-radius: 1rem;
+}
+
+.section-title {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-app-subtle);
+}
+
 .app-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -37,6 +86,10 @@ textarea {
 }
 
 @media (min-width: 640px) {
+  .page-shell {
+    padding: 1.5rem 1.25rem 2.5rem;
+  }
+
   .app-grid {
     grid-template-columns: repeat(2, 1fr);
   }

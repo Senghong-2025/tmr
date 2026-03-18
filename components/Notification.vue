@@ -1,15 +1,15 @@
 <template>
-  <div class="notification-wrapper fixed top-2 right-2 md:top-6 md:right-6 space-y-4 z-50 max-w-sm w-[calc(100vw - 2rem)]">
+  <div class="notification-wrapper fixed right-4 top-4 z-50 w-[calc(100vw-2rem)] max-w-sm space-y-3">
     <transition-group name="fade" tag="div">
       <div
         v-for="(n, index) in notifications"
         :key="index"
-        class="flex items-start gap-3 px-5 py-4 rounded-xl shadow-lg text-white relative overflow-hidden ring-1 ring-black/5 mt-2"
+        class="relative mt-2 flex items-start gap-3 overflow-hidden rounded-2xl border px-4 py-3 shadow-lg"
         :class="{
-          'bg-green-500/50': n.type === 'success',
-          'bg-red-500/50': n.type === 'error',
-          'bg-yellow-400/50 text-gray-900': n.type === 'warning',
-          'bg-blue-500/50': n.type === 'info'
+          'border-emerald-200 bg-emerald-50 text-emerald-900': n.type === 'success',
+          'border-red-200 bg-red-50 text-red-900': n.type === 'error',
+          'border-amber-200 bg-amber-50 text-amber-900': n.type === 'warning',
+          'border-blue-200 bg-blue-50 text-blue-900': n.type === 'info'
         }"
       >
         <span class="mt-1">
@@ -19,11 +19,11 @@
           <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16z"/></svg>
         </span>
         <div class="flex-1">
-          <div class="font-semibold">{{ n.type.toUpperCase() }}</div>
+          <div class="font-semibold capitalize">{{ n.type }}</div>
           <div class="text-sm opacity-90">{{ n.message }}</div>
         </div>
         <button
-          class="ml-2 text-white/70 hover:text-white transition"
+          class="ml-2 opacity-60 transition hover:opacity-100"
           @click="remove(index)"
           aria-label="Close"
         >
