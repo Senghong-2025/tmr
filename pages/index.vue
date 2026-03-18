@@ -19,7 +19,7 @@
                                 :key="preset.id"
                                 type="button"
                                 class="rounded-full border px-4 py-2 text-sm font-medium transition"
-                                :class="selectedPreset === preset.id
+                                :class="selectedPreset === preset.id    
                                     ? 'border-slate-900 bg-slate-900 text-white hover:bg-slate-800'
                                     : 'border-slate-200 bg-white text-slate-700 hover:border-blue-200 hover:text-blue-700'"
                                 @click="applyPreset(preset.id)">

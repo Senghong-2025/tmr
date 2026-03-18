@@ -6,7 +6,7 @@
     </div>
 
     <div v-if="hasData" class="grid gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(200px,0.9fr)] lg:items-center">
-      <div class="mx-auto w-full max-w-[260px] sm:max-w-[300px]">
+      <div class="mx-auto w-full max-w-[280px] overflow-visible p-3 sm:max-w-[324px]">
         <Pie :data="chartData" :options="chartOptions" :height="220" />
       </div>
 
@@ -84,6 +84,10 @@ const chartData = computed<ChartData<'pie'>>(() => ({
 
 const chartOptions = computed<ChartOptions<'pie'>>(() => ({
   responsive: true,
+  maintainAspectRatio: false,
+  layout: {
+    padding: 12,
+  },
   plugins: {
     legend: {
       display: false,
