@@ -1,9 +1,11 @@
 import { ref } from "vue";
 import {
   createUserWithEmailAndPassword,
+  GoogleAuthProvider,
   signInWithEmailAndPassword,
+  signInWithPopup,
 } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import type { ILogin, IRegister, IUser } from "~/models/user";
 
 export default function useAuth() {
@@ -19,6 +21,49 @@ export default function useAuth() {
     phone: "",
     createdOn: new Date().toISOString(),
   });
+
+  const saveSession = async (userId: string, token: string) => {
+    const docRef = doc($db, "users", userId);
+    const docSnap = await getDoc(docRef);
+    const userData = docSnap.data();
+
+    localStorage.setItem("userId", userId);
+    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("token", token);
+  };
+
+  const ensureUserProfile = async (payload: {
+    uid: string;
+    email: string;
+    username: string;
+    phone?: string;
+  }) => {
+    const docRef = doc($db, "users", payload.uid);
+    const docSnap = await getDoc(docRef);
+
+    if (!docSnap.exists()) {
+      await setDoc(docRef, {
+        email: payload.email,
+        username: payload.username,
+        phone: payload.phone ?? "",
+        createdOn: new Date().toISOString(),
+        updatedAt: serverTimestamp(),
+      });
+      return;
+    }
+
+    const currentData = docSnap.data();
+    await setDoc(
+      docRef,
+      {
+        email: payload.email,
+        username: currentData.username || payload.username,
+        phone: currentData.phone || payload.phone || "",
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true }
+    );
+  };
 
   const isValidPassword = () => {
     const password = registerModel.value.password;
@@ -59,7 +104,7 @@ export default function useAuth() {
       );
       const userId = userCredential.user.uid;
 
-      const response = await setDoc(doc($db, "users", userId), {
+      await setDoc(doc($db, "users", userId), {
         email: userCredential.user.email,
         username: request.username,
         phone: request.phone,
@@ -93,19 +138,43 @@ export default function useAuth() {
 
       if (response.user) {
         const uId = response.user.uid;
-        const docRef = doc($db, "users", uId);
-        const docSnap = await getDoc(docRef);
-        const userData = docSnap.data();
         const token = await response.user.getIdToken();
-        localStorage.setItem("userId", response.user.uid);
-        localStorage.setItem("user", JSON.stringify(userData));
-        localStorage.setItem("token", token);
+        await saveSession(uId, token);
         window.location.replace(window.location.origin);
         notify("Success", "success");
       }
     } catch (error) {
       console.error("err:", error);
       notify("Login failed. Please check your credentials.", "error");
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  const loginWithGoogle = async () => {
+    loading.value = true;
+    try {
+      const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: "select_account" });
+
+      const response = await signInWithPopup($auth, provider);
+      const user = response.user;
+      const fallbackUsername =
+        user.displayName || user.email?.split("@")[0] || "Google User";
+
+      await ensureUserProfile({
+        uid: user.uid,
+        email: user.email || "",
+        username: fallbackUsername,
+      });
+
+      const token = await user.getIdToken();
+      await saveSession(user.uid, token);
+      window.location.replace(window.location.origin);
+      notify("Success", "success");
+    } catch (error: any) {
+      console.error("Google login error:", error);
+      notify(error?.message || "Google login failed. Please try again.", "error");
     } finally {
       loading.value = false;
     }
@@ -137,6 +206,7 @@ export default function useAuth() {
     loading,
     registerModel,
     login,
+    loginWithGoogle,
     loginModel,
     logout,
     isAuth,
