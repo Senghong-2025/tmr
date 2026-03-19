@@ -6,7 +6,7 @@
         :class="[
             { 'w-full': !isBlocked },
             colorClass,
-            'relative inline-flex min-h-11 items-center justify-center rounded-xl px-5 py-2.5 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50'
+            'relative inline-flex min-h-10 items-center justify-center rounded-xl px-4 py-2.5 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50'
         ]"
     >
         <span v-if="!loading">

@@ -143,6 +143,46 @@ export default function useTransaction() {
   });
   const filteredTransactionGroups = ref<typeof transactionGroups.value>([]);
 
+  const buildTransactionGroups = (items: Transaction[]) => {
+    const grouped: Record<string, Transaction[]> = {};
+
+    items.forEach((tx) => {
+      const dateKey = tx.date.split("T")[0];
+      if (!grouped[dateKey]) grouped[dateKey] = [];
+      grouped[dateKey].push(tx);
+    });
+
+    return Object.entries(grouped).map(([date, transactions]) => ({
+      date,
+      transactions,
+      totalAmount: transactions.reduce(
+        (sum, tx) => {
+          const amount = tx.currency === "USD" ? Number(tx.amount) : Number(tx.amount) / 4000;
+          return tx.type === "Outcome" ? sum - amount : sum + amount;
+        },
+        0
+      ),
+      totalAmountKhr: transactions.reduce(
+        (sum, tx) => {
+          const amount = tx.currency === "KHR" ? Number(tx.amount) : Number(tx.amount) * 4000;
+          return tx.type === "Outcome" ? sum - amount : sum + amount;
+        },
+        0
+      ),
+    }));
+  };
+
+  const applyTransactionFilters = () => {
+    const normalizedCategory = searchModel.category?.trim().toLowerCase();
+    const filteredTransactions = normalizedCategory
+      ? transactions.value.filter(
+        (tx) => tx.category.trim().toLowerCase() === normalizedCategory
+      )
+      : transactions.value;
+
+    filteredTransactionGroups.value = buildTransactionGroups(filteredTransactions);
+  };
+
   const transactionRef = ref<HTMLElement | null>(null);
   const pastDays = ref(25);
   const handleScroll = async () => {
@@ -216,37 +256,12 @@ export default function useTransaction() {
       transactions.value = allTransactions.value.map(
         (item) => new Transaction(item)
       );
-
-      const grouped: Record<string, Transaction[]> = {};
-      transactions.value.forEach((tx) => {
-        const dateKey = tx.date.split("T")[0];
-        if (!grouped[dateKey]) grouped[dateKey] = [];
-        grouped[dateKey].push(tx);
-      });
-
-      transactionGroups.value = Object.entries(grouped).map(([date, transactions]) => ({
-        date,
-        transactions,
-        totalAmount: transactions.reduce(
-          (sum, tx) => {
-            const amount = tx.currency === "USD" ? Number(tx.amount) : Number(tx.amount) / 4000;
-            return tx.type === "Outcome" ? sum - amount : sum + amount;
-          },
-          0
-        ),
-        totalAmountKhr: transactions.reduce(
-          (sum, tx) => {
-            const amount = tx.currency === "KHR" ? Number(tx.amount) : Number(tx.amount) * 4000;
-            return tx.type === "Outcome" ? sum - amount : sum + amount;
-          },
-          0
-        ),
-      }));
+      transactionGroups.value = buildTransactionGroups(transactions.value);
     } catch (error) {
       console.error("Error fetching transactions:", error);
     } finally {
       setLoading("get", false);
-      filteredTransactionGroups.value = transactionGroups.value;
+      applyTransactionFilters();
     }
   };
 
@@ -300,12 +315,12 @@ export default function useTransaction() {
   }
 
   const onSearch = () => {
-    // filteredTransactionGroups.value = transactionGroups.value;
+    applyTransactionFilters();
   };
 
-  const isShowClearBtn = computed(() => false);
+  const isShowClearBtn = computed(() => Boolean(searchModel.category?.trim()));
   const onClear = () => {
-    // searchModel.value = "";
+    searchModel.category = "";
     onSearch();
   };
   return {

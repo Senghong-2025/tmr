@@ -1,13 +1,13 @@
 <template>
     <div>
-        <label v-if="label" class="mb-2 block text-sm font-medium text-slate-700">
+        <label v-if="label" class="mb-1.5 block text-sm font-medium text-slate-700">
             <span v-if="required" class="mr-1 text-red-500">*</span>
             {{ label }}
         </label>
 
         <div :class="['relative w-full', disabled ? 'opacity-50 cursor-not-allowed' : '']">
             <select v-model="model" :disabled="disabled"
-                class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
+                class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
                 <option v-if="placeholder" disabled value="">{{ placeholder }}</option>
                 <option v-for="option in options" :key="option.value" :value="option.value">
                     {{ option.label }}
@@ -15,7 +15,7 @@
             </select>
         </div>
 
-        <p v-if="error" class="mt-1 text-sm text-red-600">{{ error }}</p>
+        <p v-if="error" class="mt-1 text-xs text-red-600">{{ error }}</p>
     </div>
 </template>
 

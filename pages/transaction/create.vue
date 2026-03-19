@@ -2,12 +2,12 @@
     <div class="page-shell">
         <BodyHeader title="Create transaction" route="/transaction" button-name="Back" :is-button="true" class="mb-6" />
         <div class="flex justify-center w-full">
-            <form class="surface-card w-full max-w-4xl p-6 md:px-10" @submit.prevent="addTranscation">
-                <div class="mb-6">
+            <form class="surface-card w-full max-w-4xl p-5 md:px-8" @submit.prevent="addTranscation">
+                <div class="mb-5">
                     <p class="section-title mb-2">New entry</p>
                     <p class="text-sm text-slate-500">Keep each transaction clear and complete so it is easier to review later.</p>
                 </div>
-                <div class="grid gap-4 mb-6 md:grid-cols-2">
+                <div class="mb-5 grid gap-3.5 md:grid-cols-2">
                     <div v-for="field in formFields" :key="field.model">
                         <SelectField required v-if="field.model === 'currency'" v-model="model[field.model]"
                             :label="field.label" :options="currencies.map(v => ({ label: v.code, value: v.code }))" />
