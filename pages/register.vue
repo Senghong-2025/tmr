@@ -44,5 +44,10 @@
 <script setup lang="ts">
 import InputField from '@/components/formfields/InputField.vue';
 import Button1 from '@/components/buttons/Button1.vue';
-const { register, registerModel, loginWithGoogle, loading } = useAuth();
+
+const { register, registerModel, loginWithGoogle, loginWithGoogleRedirectResult, loading } = useAuth();
+
+onMounted(() => {
+    loginWithGoogleRedirectResult();
+});
 </script>

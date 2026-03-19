@@ -1,9 +1,11 @@
 import { ref } from "vue";
 import {
   createUserWithEmailAndPassword,
+  getRedirectResult,
   GoogleAuthProvider,
   signInWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
 } from "firebase/auth";
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import type { ILogin, IRegister, IUser } from "~/models/user";
@@ -63,6 +65,75 @@ export default function useAuth() {
       },
       { merge: true }
     );
+  };
+
+  const isEmbeddedAuthContext = () => {
+    if (!process.client) return false;
+
+    const inIframe = (() => {
+      try {
+        return window.self !== window.top;
+      } catch {
+        return true;
+      }
+    })();
+
+    const isElectron =
+      navigator.userAgent.toLowerCase().includes("electron") ||
+      navigator.userAgent.toLowerCase().includes("wv");
+
+    return inIframe || isElectron;
+  };
+
+  const finalizeGoogleLogin = async (user: { uid: string; email: string | null; displayName: string | null; getIdToken: () => Promise<string> }) => {
+    const fallbackUsername =
+      user.displayName || user.email?.split("@")[0] || "Google User";
+
+    await ensureUserProfile({
+      uid: user.uid,
+      email: user.email || "",
+      username: fallbackUsername,
+    });
+
+    const token = await user.getIdToken();
+    await saveSession(user.uid, token);
+    window.location.replace(window.location.origin);
+    notify("Success", "success");
+  };
+
+  const beginGoogleRedirectLogin = async () => {
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: "select_account" });
+
+    sessionStorage.setItem("google-auth-pending", "1");
+    await signInWithRedirect($auth, provider);
+  };
+
+  const loginWithGoogleRedirectResult = async () => {
+    if (!process.client || sessionStorage.getItem("google-auth-pending") !== "1") {
+      return false;
+    }
+
+    loading.value = true;
+
+    try {
+      const result = await getRedirectResult($auth);
+
+      if (!result?.user) {
+        return false;
+      }
+
+      sessionStorage.removeItem("google-auth-pending");
+      await finalizeGoogleLogin(result.user);
+      return true;
+    } catch (error: any) {
+      sessionStorage.removeItem("google-auth-pending");
+      console.error("Google redirect login error:", error);
+      notify(error?.message || "Google login failed. Please try again.", "error");
+      return false;
+    } finally {
+      loading.value = false;
+    }
   };
 
   const isValidPassword = () => {
@@ -154,24 +225,24 @@ export default function useAuth() {
   const loginWithGoogle = async () => {
     loading.value = true;
     try {
+      if (isEmbeddedAuthContext()) {
+        loading.value = false;
+
+        if (window.self !== window.top) {
+          const loginUrl = new URL("/login", window.location.origin);
+          loginUrl.searchParams.set("googleSignIn", "1");
+          window.top?.location.assign(loginUrl.toString());
+          return;
+        }
+
+        await beginGoogleRedirectLogin();
+        return;
+      }
+
       const provider = new GoogleAuthProvider();
       provider.setCustomParameters({ prompt: "select_account" });
-
       const response = await signInWithPopup($auth, provider);
-      const user = response.user;
-      const fallbackUsername =
-        user.displayName || user.email?.split("@")[0] || "Google User";
-
-      await ensureUserProfile({
-        uid: user.uid,
-        email: user.email || "",
-        username: fallbackUsername,
-      });
-
-      const token = await user.getIdToken();
-      await saveSession(user.uid, token);
-      window.location.replace(window.location.origin);
-      notify("Success", "success");
+      await finalizeGoogleLogin(response.user);
     } catch (error: any) {
       console.error("Google login error:", error);
       notify(error?.message || "Google login failed. Please try again.", "error");
@@ -207,6 +278,8 @@ export default function useAuth() {
     registerModel,
     login,
     loginWithGoogle,
+    loginWithGoogleRedirectResult,
+    beginGoogleRedirectLogin,
     loginModel,
     logout,
     isAuth,

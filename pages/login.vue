@@ -38,5 +38,18 @@
 import InputField from '~/components/formfields/InputField.vue';
 import Button1 from '~/components/buttons/Button1.vue';
 
-const { loginModel, login, loginWithGoogle, loading } = useAuth();
+const route = useRoute();
+const { loginModel, login, loginWithGoogle, loginWithGoogleRedirectResult, beginGoogleRedirectLogin, loading } = useAuth();
+
+onMounted(async () => {
+    const handledRedirect = await loginWithGoogleRedirectResult();
+
+    if (handledRedirect) {
+        return;
+    }
+
+    if (route.query.googleSignIn === '1') {
+        await beginGoogleRedirectLogin();
+    }
+});
 </script>
