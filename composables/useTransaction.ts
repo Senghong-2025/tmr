@@ -44,7 +44,7 @@ export default function useTransaction() {
       label: "Amount",
       model: "amount",
       placeholder: "Enter amount",
-      type: "number",
+      type: "text",
       mode: "decimal",
     },
     { label: "Currency", model: "currency", placeholder: "Currency ID" },
