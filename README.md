@@ -1,13 +1,13 @@
 # Transaction Manager (TMR)
 
-A modern transaction and expense tracking application built with Nuxt 3, Vue 3, and Firebase. Track your daily expenses, visualize spending patterns, and manage multiple currencies.
+A modern transaction and expense tracking application built with Nuxt 3, Vue 3, and PostgreSQL. Track your daily expenses, visualize spending patterns, and manage multiple currencies.
 
 ## Features
 
 - **Transaction Management**: Create, view, edit, and delete transactions
 - **Data Visualization**: Interactive bar charts showing spending patterns over time
 - **Multi-Currency Support**: Track expenses in different currencies (USD, KHR)
-- **User Authentication**: Secure login and registration with Firebase
+- **User Authentication**: Secure email/password login and registration
 - **Category Management**: Organize transactions by custom categories
 - **Profile Settings**: Manage user profile and preferences
 - **Responsive Design**: Works seamlessly on desktop and mobile devices
@@ -18,7 +18,7 @@ A modern transaction and expense tracking application built with Nuxt 3, Vue 3, 
 - **Framework**: [Nuxt 3](https://nuxt.com/)
 - **UI Library**: [PrimeVue](https://primevue.org/) with custom Tailwind CSS styling
 - **Charts**: Chart.js with vue-chartjs
-- **Backend**: Firebase (Authentication & Firestore)
+- **Backend**: Nuxt server API with Neon PostgreSQL
 - **Styling**: Tailwind CSS 4
 - **Icons**: Heroicons
 - **Date Handling**: date-fns
@@ -27,20 +27,49 @@ A modern transaction and expense tracking application built with Nuxt 3, Vue 3, 
 
 - Node.js (v18 or higher recommended)
 - npm, pnpm, yarn, or bun
-- Firebase project with Firestore and Authentication enabled
+- PostgreSQL database, such as Neon, and the `psql` CLI for schema publishing
 
 ## Environment Setup
 
-Create a `.env` file in the root directory with your Firebase configuration:
+Create a `.env` file in the root directory with your PostgreSQL connection string:
 
 ```env
-FIREBASE_API_KEY=your_api_key
-FIREBASE_AUTH_DOMAIN=your_auth_domain
-FIREBASE_PROJECT_ID=your_project_id
-FIREBASE_STORAGE_BUCKET=your_storage_bucket
-FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
-FIREBASE_APP_ID=your_app_id
-FIREBASE_MEASUREMENT_ID=your_measurement_id
+DATABASE_URL=postgresql://user:password@host/database?sslmode=require
+# Optional. Defaults to "neon" for *.neon.tech hosts and "pg" otherwise.
+# DATABASE_DRIVER=pg
+```
+
+Publish the database schema before starting the app:
+
+```bash
+npm run db:publish
+```
+
+To validate the publish script without changing the database:
+
+```bash
+npm run db:publish:dry
+```
+
+The schema is split into ordered SQL files under `server/database/sql`:
+
+```text
+server/database/sql/
+├── 001_extensions.sql
+├── functions/
+│   └── 001_set_updated_at.sql
+└── tables/
+    ├── 001_users.sql
+    ├── 002_sessions.sql
+    ├── 003_categories.sql
+    ├── 004_currencies.sql
+    └── 005_transactions.sql
+```
+
+To build the app and publish SQL in one command:
+
+```bash
+npm run build:publish-sql
 ```
 
 ## Installation
@@ -115,6 +144,13 @@ yarn preview
 bun run preview
 ```
 
+Run the built Node server directly:
+
+```bash
+npm run build
+npm run start
+```
+
 ## Deployment
 
 ### Cloudflare Pages
@@ -122,11 +158,8 @@ bun run preview
 This project is configured for deployment to Cloudflare Pages:
 
 ```bash
-# Build for Cloudflare Pages
-npm run build:prod
-
-# Deploy to Cloudflare Pages
-npm run deploy:prod
+# Build and deploy to Cloudflare Pages
+npm run deploy
 ```
 
 For other deployment options, check out the [Nuxt deployment documentation](https://nuxt.com/docs/getting-started/deployment).
@@ -152,7 +185,12 @@ For other deployment options, check out the [Nuxt deployment documentation](http
 │   ├── formfields/            # Reusable form inputs
 │   ├── buttons/               # Button components
 │   └── Modals/                # Modal components
-├── plugins/                   # Nuxt plugins (Firebase)
+├── server/
+│   ├── api/                   # Nuxt API routes
+│   ├── database/              # PostgreSQL connection and schema
+│   ├── repositories/          # SQL access layer
+│   ├── services/              # Business logic
+│   └── utils/                 # Auth and hashing helpers
 └── assets/                    # Static assets and styles
 ```
 

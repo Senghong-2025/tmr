@@ -1,8 +1,6 @@
-import { addDoc, collection, deleteDoc, doc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import type { ICategory, ICreateCategory } from "~/models/category";
 
 export default function useCategory() {
-  const { $db } = useNuxtApp();
   const categories = ref<ICategory[]>([]);
   const { isLoading, setLoading } = useLoading();
   const isEdit = ref(false);
@@ -11,17 +9,11 @@ export default function useCategory() {
 
   const getCategory = async () => {
     setLoading("get", true);
+
     try {
-      const useId = localStorage.getItem("userId");
-      const q = query(
-        collection($db, "categories"),
-        where("userId", "==", useId)
-      );
-      const querySnapshot = await getDocs(q);
-      categories.value = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...(doc.data() as ICategory),
-      }));
+      categories.value = await $fetch<ICategory[]>("/api/categories", {
+        headers: getAuthHeaders(),
+      });
     } catch (error) {
       console.error("Error fetching categories:", error);
     } finally {
@@ -35,22 +27,24 @@ export default function useCategory() {
     type: "",
     createdOn: "",
   });
+
   const addCategory = async () => {
-    setLoading('add', true);
+    setLoading("add", true);
+
     try {
-      const useId = localStorage.getItem("userId");
-      if (!useId) {
-        console.error("User ID not found in local storage.");
-        return;
-      }
-      model.userId = useId;
-      model.createdOn = new Date().toISOString();
-      await addDoc(collection($db, "categories"), {
-        ...toRaw(model),
+      const category = await $fetch<ICategory>("/api/categories", {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: {
+          name: model.name,
+          type: model.type,
+        },
       });
-      await getCategory();
+
+      categories.value.push(category);
     } catch (error) {
       console.error("Error adding category:", error);
+      notify(getApiErrorMessage(error, "Error adding category."), "error");
     } finally {
       model.name = "";
       model.type = "";
@@ -62,19 +56,24 @@ export default function useCategory() {
     id.value = categoryId;
     isShowModal.value = true;
   };
+
   const deleteCategory = async () => {
     setLoading("delete", true);
+
     try {
-      const categoryRef = doc($db, "categories", id.value);
-      await deleteDoc(categoryRef);
+      await $fetch(`/api/categories/${id.value}`, {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+      });
       categories.value = categories.value.filter((category) => category.id !== id.value);
     } catch (error) {
       console.error("Error deleting category:", error);
+      notify(getApiErrorMessage(error, "Error deleting category."), "error");
     } finally {
       setLoading("delete", false);
       isShowModal.value = false;
     }
-  }
+  };
 
   const onClickEdit = (category: ICategory) => {
     isEdit.value = true;
@@ -87,24 +86,28 @@ export default function useCategory() {
 
   const updateCategory = async () => {
     setLoading("update", true);
+
     try {
-      const categoryRef = doc($db, "categories", id.value);
-      await updateDoc(categoryRef, {
-        name: model.name,
-        type: model.type,
-        userId: model.userId,
-        createdOn: model.createdOn,
+      await $fetch(`/api/categories/${id.value}`, {
+        method: "PUT",
+        headers: getAuthHeaders(),
+        body: {
+          name: model.name,
+          type: model.type,
+        },
       });
+
       await getCategory();
       isEdit.value = false;
-      model.name = '';
-      model.type = '';
+      model.name = "";
+      model.type = "";
     } catch (error) {
       console.error("Error updating category:", error);
+      notify(getApiErrorMessage(error, "Error updating category."), "error");
     } finally {
       setLoading("update", false);
     }
-  }
+  };
 
   return {
     getCategory,

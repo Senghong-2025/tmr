@@ -1,6 +1,10 @@
-import { addDoc, collection, deleteDoc, doc, getCountFromServer, getDoc, getDocs, limit, orderBy, query, startAfter, updateDoc, where } from "firebase/firestore";
 import type { TInputMode, TInputType } from "~/models/form";
-import { Transaction, type ICreateTransaction, type ITransaction, type ITransactionGroupDisplay } from "~/models/transaction";
+import {
+  Transaction,
+  type ICreateTransaction,
+  type ITransaction,
+  type ITransactionGroupDisplay,
+} from "~/models/transaction";
 import { notify } from "~/composables/useNotification";
 
 interface IFormField {
@@ -12,7 +16,6 @@ interface IFormField {
 }
 
 export default function useTransaction() {
-  const { $db } = useNuxtApp();
   const transactions = ref<Transaction[]>([]);
   const { categories, getCategory } = useCategory();
   const { isLoading, setLoading } = useLoading();
@@ -59,27 +62,36 @@ export default function useTransaction() {
     "date",
   ];
 
+  const buildPayload = () => ({
+    title: model.title,
+    category: model.category,
+    amount: model.amount,
+    currency: model.currency,
+    date: model.date,
+    note: model.note,
+    type: model.type,
+  });
+
   const addTranscation = async () => {
-    const userId = localStorage.getItem("userId");
     setLoading("add", true);
+
     try {
       validateRequiredFields(model, requiredFields);
-      if (userId) {
-        model.userId = userId;
-        model.createdOn = new Date().toISOString();
-        const response = await addDoc(collection($db, "transactions"), {
-          ...toRaw(model),
-        });
-        if (response && response.id) {
-          notify("Transaction added successfully.", "success");
-          navigateTo("/transaction");
-        }
+      const response = await $fetch<ITransaction>("/api/transactions", {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: buildPayload(),
+      });
+
+      if (response?.id) {
+        notify("Transaction added successfully.", "success");
+        navigateTo("/transaction");
       }
     } catch (error) {
       console.error("Error", error);
       notify(
         error instanceof Error
-          ? error.message
+          ? getApiErrorMessage(error, error.message)
           : "An unexpected error occurred.",
         "error"
       );
@@ -94,9 +106,9 @@ export default function useTransaction() {
 
   const getTransactionById = async (id: string) => {
     try {
-      const docRef = doc($db, "transactions", id);
-      const docSnap = await getDoc(docRef);
-      return docSnap.data() as Transaction;
+      return await $fetch<ITransaction>(`/api/transactions/${id}`, {
+        headers: getAuthHeaders(),
+      });
     } catch (error) {
       console.error("Get error with: ", error);
     }
@@ -104,24 +116,22 @@ export default function useTransaction() {
 
   const updateTransaction = async (id: string) => {
     setLoading("update", true);
+
     try {
       validateRequiredFields(model, requiredFields);
-      const userId = localStorage.getItem("userId");
-      if (userId) {
-        model.userId = userId;
-        model.modifiedOn = new Date().toISOString();
-        const transactionRef = doc($db, "transactions", id);
-        await updateDoc(transactionRef, {
-          ...toRaw(model),
-        });
-        notify("Transaction updated successfully.", "success");
-        navigateTo("/transaction");
-      }
+      await $fetch(`/api/transactions/${id}`, {
+        method: "PUT" as any,
+        headers: getAuthHeaders(),
+        body: buildPayload(),
+      });
+
+      notify("Transaction updated successfully.", "success");
+      navigateTo("/transaction");
     } catch (error) {
       console.error("Error updating transaction:", error);
       notify(
         error instanceof Error
-          ? error.message
+          ? getApiErrorMessage(error, error.message)
           : "An unexpected error occurred.",
         "error"
       );
@@ -131,11 +141,11 @@ export default function useTransaction() {
   };
 
   const transactionGroups = useState<ITransactionGroupDisplay[]>(
-    'transactionGroups',
+    "transactionGroups",
     () => []
   );
 
-  const searchModel = reactive<Partial<ICreateTransaction>>({
+  const searchModel = reactive({
     title: "",
     category: "",
     amount: "",
@@ -155,20 +165,16 @@ export default function useTransaction() {
     return Object.entries(grouped).map(([date, transactions]) => ({
       date,
       transactions,
-      totalAmount: transactions.reduce(
-        (sum, tx) => {
-          const amount = tx.currency === "USD" ? Number(tx.amount) : Number(tx.amount) / 4000;
-          return tx.type === "Outcome" ? sum - amount : sum + amount;
-        },
-        0
-      ),
-      totalAmountKhr: transactions.reduce(
-        (sum, tx) => {
-          const amount = tx.currency === "KHR" ? Number(tx.amount) : Number(tx.amount) * 4000;
-          return tx.type === "Outcome" ? sum - amount : sum + amount;
-        },
-        0
-      ),
+      totalAmount: transactions.reduce((sum, tx) => {
+        const amount =
+          tx.currency === "USD" ? Number(tx.amount) : Number(tx.amount) / 4000;
+        return tx.type === "Outcome" ? sum - amount : sum + amount;
+      }, 0),
+      totalAmountKhr: transactions.reduce((sum, tx) => {
+        const amount =
+          tx.currency === "KHR" ? Number(tx.amount) : Number(tx.amount) * 4000;
+        return tx.type === "Outcome" ? sum - amount : sum + amount;
+      }, 0),
     }));
   };
 
@@ -176,86 +182,65 @@ export default function useTransaction() {
     const normalizedCategory = searchModel.category?.trim().toLowerCase();
     const filteredTransactions = normalizedCategory
       ? transactions.value.filter(
-        (tx) => tx.category.trim().toLowerCase() === normalizedCategory
-      )
+          (tx) => tx.category.trim().toLowerCase() === normalizedCategory
+        )
       : transactions.value;
 
     filteredTransactionGroups.value = buildTransactionGroups(filteredTransactions);
   };
 
   const transactionRef = ref<HTMLElement | null>(null);
-  const pastDays = ref(25);
   const handleScroll = async () => {
-    if (!transactionRef.value || isLoading('get') || isFinnal.value) return;
+    if (!transactionRef.value || isLoading("get") || isFinnal.value) return;
     const { scrollTop, scrollHeight, clientHeight } = transactionRef.value;
-    const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10; // add small tolerance
+    const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10;
     if (isAtBottom) {
       await getTransaction();
     }
   };
 
-  const lastVisible = ref();
-  const allTransactions = ref<any[]>([]);
+  const nextOffset = ref<number | null>(0);
+  const allTransactions = ref<ITransaction[]>([]);
   const isFinnal = ref(false);
+
   const fetchTransactions = async () => {
-    const userId = localStorage.getItem("userId");
-    if (!userId) {
-      console.warn("User ID not found in localStorage");
+    if (nextOffset.value === null) {
+      isFinnal.value = true;
       return;
     }
 
-    let q;
-    if (lastVisible.value) {
-      q = query(
-        collection($db, "transactions"),
-        where("userId", "==", userId),
-        orderBy("date", "desc"),
-        startAfter(lastVisible.value),
-        limit(25)
-      );
-    } else {
-      q = query(
-        collection($db, "transactions"),
-        where("userId", "==", userId),
-        orderBy("date", "desc"),
-        limit(25)
-      );
-    }
-
-    const response = await getDocs(q);
-    if (!response.empty) {
-      lastVisible.value = response.docs[response.docs.length - 1];
-    }
-
-    const newTransactions = response.docs.map((doc) => {
-      const data = doc.data() as Omit<ITransaction, "id">;
-      return {
-        id: doc.id,
-        ...data,
-      };
+    const response = await $fetch<{
+      items: ITransaction[];
+      nextOffset: number | null;
+    }>("/api/transactions", {
+      headers: getAuthHeaders(),
+      query: {
+        limit: 25,
+        offset: nextOffset.value,
+      },
     });
 
-    // Deduplicate by id
-    const existingIds = new Set(allTransactions.value.map((t) => t.id));
-    const uniqueNew = newTransactions.filter((t) => !existingIds.has(t.id));
+    nextOffset.value = response.nextOffset;
+
+    const existingIds = new Set(allTransactions.value.map((transaction) => transaction.id));
+    const uniqueNew = response.items.filter((transaction) => !existingIds.has(transaction.id));
 
     allTransactions.value.push(...uniqueNew);
 
-    if (newTransactions.length < 25) {
+    if (response.nextOffset === null) {
       isFinnal.value = true;
     }
   };
 
   const getTransaction = async () => {
-    if (isFinnal.value || isLoading('get')) return;
+    if (isFinnal.value || isLoading("get")) return;
 
     setLoading("get", true);
+
     try {
       await fetchTransactions();
 
-      transactions.value = allTransactions.value.map(
-        (item) => new Transaction(item)
-      );
+      transactions.value = allTransactions.value.map((item) => new Transaction(item));
       transactionGroups.value = buildTransactionGroups(transactions.value);
     } catch (error) {
       console.error("Error fetching transactions:", error);
@@ -267,16 +252,25 @@ export default function useTransaction() {
 
   const deleteTransaction = async (id: string) => {
     setLoading("delete", true);
+
     try {
-      const transactionRef = doc($db, "transactions", id);
-      await deleteDoc(transactionRef);
+      await $fetch(`/api/transactions/${id}`, {
+        method: "DELETE" as any,
+        headers: getAuthHeaders(),
+      });
       notify("Transaction deleted successfully.", "success");
-      await getTransaction();
+
+      allTransactions.value = allTransactions.value.filter(
+        (transaction) => transaction.id !== id
+      );
+      transactions.value = allTransactions.value.map((item) => new Transaction(item));
+      transactionGroups.value = buildTransactionGroups(transactions.value);
+      applyTransactionFilters();
     } catch (error) {
       console.error("Error deleting transaction:", error);
       notify(
         error instanceof Error
-          ? error.message
+          ? getApiErrorMessage(error, error.message)
           : "An unexpected error occurred.",
         "error"
       );
@@ -286,33 +280,27 @@ export default function useTransaction() {
     }
   };
 
-  let total = ref<number>(0);
+  const total = ref<number>(0);
   const getTotalTransactionByMonth = async (month?: string) => {
     setLoading("get", true);
-    const userId = localStorage.getItem('userId');
-    if (!userId) return 0;
 
-    const now = new Date();
-    const targetMonth = month || `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-
-    const q = query(
-      collection($db, 'transactions'),
-      where('userId', '==', userId)
-    );
-    const response = await getDocs(q);
-    total.value = response.docs
-      .map((doc) => doc.data() as ITransaction)
-      .filter((tx) => tx.date.startsWith(targetMonth))
-      .reduce((sum, tx) => {
-        if (tx.currency.toUpperCase() === "USD") {
-          return sum + Number(tx.amount);
-        } else if (tx.currency.toUpperCase() === "KHR") {
-          return sum + Number(tx.amount) / 4000;
+    try {
+      const response = await $fetch<{ total: number }>(
+        "/api/transactions/monthly-total",
+        {
+          headers: getAuthHeaders(),
+          query: month ? { month } : undefined,
         }
-        return sum;
-      }, 0);
-    setLoading("get", false);
-  }
+      );
+
+      total.value = response.total;
+    } catch (error) {
+      console.error("Error fetching monthly total:", error);
+      total.value = 0;
+    } finally {
+      setLoading("get", false);
+    }
+  };
 
   const onSearch = () => {
     applyTransactionFilters();
@@ -323,6 +311,7 @@ export default function useTransaction() {
     searchModel.category = "";
     onSearch();
   };
+
   return {
     formFields,
     model,

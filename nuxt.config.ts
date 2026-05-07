@@ -5,22 +5,14 @@ export default defineNuxtConfig({
   css: ["~/assets/main.css"],
   devtools: { enabled: true },
   modules: ["@primevue/nuxt-module", "@nuxtjs/color-mode"],
-  plugins: ["~/plugins/firebase.ts"],
   colorMode: {
     classSuffix: "",
     preference: "light",
     fallback: "light",
   },
   runtimeConfig: {
-    public: {
-      firebaseApiKey: process.env.FIREBASE_API_KEY,
-      firebaseAuthDomain: process.env.FIREBASE_AUTH_DOMAIN,
-      firebaseProjectId: process.env.FIREBASE_PROJECT_ID,
-      firebaseStorageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-      firebaseMessagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-      firebaseAppId: process.env.FIREBASE_APP_ID,
-      firebaseMeasurementId: process.env.FIREBASE_MEASUREMENT_ID,
-    }
+    databaseUrl: process.env.DATABASE_URL,
+    databaseDriver: process.env.DATABASE_DRIVER,
   },
   vite: {
     plugins: [tailwindcss()],
