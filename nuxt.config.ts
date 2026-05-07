@@ -1,5 +1,11 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import tailwindcss from "@tailwindcss/vite";
+import { fileURLToPath } from "node:url";
+
+const pgNativeShim = fileURLToPath(
+  new URL("./server/shims/pg-native.cjs", import.meta.url)
+);
+
 export default defineNuxtConfig({
   compatibilityDate: "2025-05-15",
   css: ["~/assets/main.css"],
@@ -24,6 +30,9 @@ export default defineNuxtConfig({
     },
   },
   nitro: {
+    alias: {
+      "pg-native": pgNativeShim,
+    },
     prerender: {
       autoSubfolderIndex: false,
     },

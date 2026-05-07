@@ -13,9 +13,19 @@ type QueryResultWithRows<T extends QueryResultRow> = {
 let neonSql: ReturnType<typeof neon<false, true>> | null = null;
 let pgPool: PgPool | null = null;
 
+function getRuntimeEnv(name: string) {
+  const cloudflareEnv = (
+    globalThis as typeof globalThis & {
+      __env__?: Record<string, string | undefined>;
+    }
+  ).__env__;
+
+  return cloudflareEnv?.[name] || process.env[name];
+}
+
 function getConnectionString() {
   const config = useRuntimeConfig();
-  const connectionString = config.databaseUrl || process.env.DATABASE_URL;
+  const connectionString = config.databaseUrl || getRuntimeEnv("DATABASE_URL");
 
   if (!connectionString) {
     throw new Error("DATABASE_URL is required for PostgreSQL access.");
@@ -26,7 +36,7 @@ function getConnectionString() {
 
 function shouldUseNeonHttp(connectionString: string) {
   const config = useRuntimeConfig();
-  const driver = config.databaseDriver || process.env.DATABASE_DRIVER;
+  const driver = config.databaseDriver || getRuntimeEnv("DATABASE_DRIVER");
 
   if (driver === "neon") return true;
   if (driver === "pg") return false;
