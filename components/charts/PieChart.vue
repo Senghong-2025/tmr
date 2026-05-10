@@ -15,6 +15,7 @@
           v-for="(label, index) in props.property.label"
           :key="label"
           class="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
+          @click="$emit('select-category', label)" style="cursor: pointer"
         >
           <div class="flex items-center gap-3 min-w-0">
             <span
@@ -52,6 +53,10 @@ import usePrivacy from '~/composables/usePrivacy';
 
 const props = defineProps<{
   property: IPieChart,
+}>();
+
+const emits = defineEmits<{
+  (e:'selectCategory', category: string): void,
 }>();
 
 ChartJS.register(ArcElement, Tooltip, Legend);

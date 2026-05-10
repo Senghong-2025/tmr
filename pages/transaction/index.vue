@@ -142,6 +142,19 @@ const categoryOptions = computed(() => categories.value.map((category) => ({
     value: category.name
 })));
 
+const route = useRoute();
+const categoryFromQuery = computed(() => {
+    const category = route.query.category;
+    return typeof category === 'string' ? category : '';
+});
+
+watch(categoryFromQuery, (newCategory) => {
+    if (newCategory.length > 0) {
+        searchModel.category = newCategory;
+        onSearch();
+    }
+}, { immediate: true });
+
 onMounted(() => {
     loadSettings();
     getCategory();
